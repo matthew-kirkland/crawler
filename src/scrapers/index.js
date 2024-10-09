@@ -14,12 +14,17 @@ async function main() {
             cards.forEach(card => {
                 const text = card.querySelector('.Card-Head').innerText.trim();
                 if (text == 'Leaderboard Positions') {
-                    const spans = card.querySelectorAll('.Card-Body div span');
-                    const cardPositions = Array.from(spans).map(span => {
-                        const rawText = span.innerText.trim();
-                        return parseInt(rawText.replace(/[^0-9]/g, ''));
+                    const spans = card.querySelectorAll('.Card-Body div span.MinecraftText.undefined');
+                    spans.forEach(span => {
+                        const positionSpan = span.querySelector('span:nth-child(2)');
+                        if (positionSpan) {
+                            const rawText = positionSpan.innerText.trim();
+                            const position = parseInt(rawText.replace(/[^0-9]/g, ''));
+                            if (!isNaN(position)) {
+                                positions.push(position);
+                            }
+                        }
                     });
-                    positions.push(...cardPositions);
                 }
             });
             return positions;
