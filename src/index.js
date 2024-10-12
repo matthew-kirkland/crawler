@@ -1,7 +1,9 @@
 import { pitpandaScraper } from './scrapers/pitpanda.js';
+import puppeteer from 'puppeteer';
 
 async function main() {
-    const leaderboardPositions = await pitpandaScraper('https://www.pitpanda.rocks/players/kanye_fan30');
+    const browser = await puppeteer.launch();
+    const leaderboardPositions = await pitpandaScraper(browser, 'https://www.pitpanda.rocks/players/kanye_fan30');
     console.log(`Leaderboard positions are: ${leaderboardPositions}`);
     let sum = 0;
     for (let i = 0; i < leaderboardPositions.length; i++) {
