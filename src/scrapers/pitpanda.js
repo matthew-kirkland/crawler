@@ -1,10 +1,10 @@
 import puppeteer from 'puppeteer';
 
-async function main() {
+export async function pitpandaScraper(url) {
     try {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
-        await page.goto('https://www.pitpanda.rocks/players/kanye_fan30');
+        await page.goto(url);
 
         await page.waitForSelector('#root #side .Card');
 
@@ -30,17 +30,9 @@ async function main() {
             return positions;
         });
 
-        console.log(`Leaderboard positions are: ${leaderboardPositions}`);
-        let sum = 0;
-        for (let i = 0; i < leaderboardPositions.length; i++) {
-            sum += leaderboardPositions[i];
-        }
-        console.log(`The average of the leaderboard positions is: ${sum / leaderboardPositions.length}`);
-
         await browser.close();
+        return leaderboardPositions;
     } catch (error) {
         console.log('Error fetching page: ', error);
     }
 }
-
-main();
