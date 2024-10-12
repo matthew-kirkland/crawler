@@ -1,8 +1,7 @@
 import puppeteer from 'puppeteer';
 
-export async function pitpandaScraper(browser, url) {
+export async function pitpandaScraper(page, url) {
     try {
-        const page = await browser.newPage();
         await page.goto(url);
         await page.waitForSelector('#root #side .Card');
 
@@ -27,8 +26,6 @@ export async function pitpandaScraper(browser, url) {
             });
             return positions;
         });
-
-        await browser.close();
         return leaderboardPositions;
     } catch (error) {
         console.log('Error fetching page: ', error);
