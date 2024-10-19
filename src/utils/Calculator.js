@@ -3,6 +3,7 @@ export class Calculator {
         return ((1 / odds1) + (1 / odds2) < 1);
     }
 
+    // Places the profit on the event more likely to win
     static moneySplit(total, odds1, odds2) {
         let money1;
         let money2;
