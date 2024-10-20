@@ -15,6 +15,10 @@ export class Queue {
         return this.queue.length === 0;
     }
 
+    peek() {
+        return this.queue[0];
+    }
+
     printQueue() {
         this.queue.forEach(item => console.log(item));
     }
