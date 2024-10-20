@@ -1,5 +1,6 @@
 import { ladbrokesScraper } from './scrapers/ladbrokes.js';
 import { pitpandaScraper } from './scrapers/pitpanda.js';
+import { Queue } from './utils/Queue.js';
 import puppeteer from 'puppeteer';
 
 async function main() {
@@ -10,12 +11,17 @@ async function main() {
         width: 1280,
         height: 800
     });
-    const events = await ladbrokesScraper(page, 'https://www.ladbrokes.com.au/sports/soccer/uk-ireland/premier-league');
-    for (const event of events) {
-        console.log(`Event: ${event.eventTitle}`);
-        console.log(`Team 1: ${event.team1Name} - ${event.team1Odds}`);
-        console.log(`Draw: ${event.drawOdds}`);
-        console.log(`Team 2: ${event.team2Name} - ${event.team2Odds}`);
+
+    const ladbrokesQueue = new Queue;
+    ladbrokesQueue.enqueue('https://www.ladbrokes.com.au/sports/soccer/uk-ireland/premier-league');
+    while (!ladbrokesQueue.isEmpty()) {
+        const events = await ladbrokesScraper(page, ladbrokesQueue.dequeue(), ladbrokesQueue);
+        for (const event of events) {
+            console.log(`Event: ${event.eventTitle}`);
+            console.log(`Team 1: ${event.team1Name} - ${event.team1Odds}`);
+            console.log(`Draw: ${event.drawOdds}`);
+            console.log(`Team 2: ${event.team2Name} - ${event.team2Odds}`);
+        }
     }
     await browser.close();
 }
