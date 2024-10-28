@@ -1,5 +1,6 @@
 import puppeteer from 'puppeteer';
 
+
 export async function ladbrokesScraper(page, url, visitedLinks, queue) {
     try {
         await page.goto(url);
@@ -9,25 +10,38 @@ export async function ladbrokesScraper(page, url, visitedLinks, queue) {
         await page.waitForSelector('.price-button-odds-price span');
         await page.waitForSelector('.price-button-name span');
         await page.waitForSelector('a');
-        ladbrokesCrawler(page, visitedLinks, queue);
+        // ladbrokesCrawler(page, visitedLinks, queue);
         const events = await page.evaluate(() => {
+            function collectMarket(eventCard) {
+                const title = eventCard.querySelector('.sports-event-title__name-text');
+                const odds = eventCard.querySelectorAll('.price-button-odds-price span');
+                const names = eventCard.querySelectorAll('.price-button-name span');
+                if (names.length == 2) {
+                    return {
+                        eventTitle: title.innerText.trim(),
+                        team1Name: names[0].innerText.trim(),
+                        team1Odds: odds[0].innerText.trim(),
+                        team2Name: names[1].innerText.trim(),
+                        team2Odds: odds[1].innerText.trim(),
+                    };
+                } else if (names.length == 3) {
+                    return {
+                        eventTitle: title.innerText.trim(),
+                        team1Name: names[0].innerText.trim(),
+                        team1Odds: odds[0].innerText.trim(),
+                        drawOdds: odds[1].innerText.trim(),
+                        team2Name: names[2].innerText.trim(),
+                        team2Odds: odds[2].innerText.trim(),
+                    };
+                }
+            }
             const eventsArray = [];
             const eventCards = document.querySelectorAll('#main #page .sport-event-card');
             eventCards.forEach(eventCard => {
                 const hasMarket = eventCard.querySelector('.sports-market-primary');
                 if (!hasMarket) return;
-
-                const title = eventCard.querySelector('.sports-event-title__name-text');
-                const odds = eventCard.querySelectorAll('.price-button-odds-price span');
-                const names = eventCard.querySelectorAll('.price-button-name span');
-                eventsArray.push({
-                    eventTitle: title.innerText.trim(),
-                    team1Name: names[0].innerText.trim(),
-                    team1Odds: odds[0].innerText.trim(),
-                    drawOdds: odds[1].innerText.trim(),
-                    team2Name: names[2].innerText.trim(),
-                    team2Odds: odds[2].innerText.trim(),
-                });
+                const event = collectMarket(eventCard);
+                eventsArray.push(event);
             });
             return eventsArray;
         });

@@ -16,15 +16,24 @@ async function main() {
     visitedLinks.add('https://www.ladbrokes.com.au/sports/soccer/uk-ireland/premier-league');
     const ladbrokesQueue = new Queue;
     ladbrokesQueue.enqueue('https://www.ladbrokes.com.au/sports/soccer/uk-ireland/premier-league');
+    ladbrokesQueue.enqueue('https://www.ladbrokes.com.au/sports/soccer/australia/a-league-men');
+    ladbrokesQueue.enqueue('https://www.ladbrokes.com.au/sports/soccer/spain');
+    ladbrokesQueue.enqueue('https://www.ladbrokes.com.au/sports/basketball/usa/nba');
     while (!ladbrokesQueue.isEmpty()) {
         console.log(`visiting link ${ladbrokesQueue.peek()}`);
         const events = await ladbrokesScraper(page, ladbrokesQueue.dequeue(), visitedLinks, ladbrokesQueue);
-        // for (const event of events) {
-        //     console.log(`Event: ${event.eventTitle}`);
-        //     console.log(`Team 1: ${event.team1Name} - ${event.team1Odds}`);
-        //     console.log(`Draw: ${event.drawOdds}`);
-        //     console.log(`Team 2: ${event.team2Name} - ${event.team2Odds}`);
-        // }
+        try {
+            for (const event of events) {
+                console.log(`Event: ${event.eventTitle}`);
+                console.log(`Team 1: ${event.team1Name} - ${event.team1Odds}`);
+                if (event.drawOdds) {
+                    console.log(`Draw: ${event.drawOdds}`);
+                }
+                console.log(`Team 2: ${event.team2Name} - ${event.team2Odds}`);
+            }
+        } catch (error) {
+            console.error('Error processing events:', error);
+        }
     }
     await browser.close();
 }
