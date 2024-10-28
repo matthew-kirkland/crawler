@@ -1,5 +1,4 @@
 import { ladbrokesScraper } from './scrapers/ladbrokes.js';
-import { pitpandaScraper } from './scrapers/pitpanda.js';
 import { Queue } from './utils/Queue.js';
 import puppeteer from 'puppeteer';
 
@@ -15,16 +14,23 @@ async function main() {
 
     visitedLinks.add('https://www.ladbrokes.com.au/sports/soccer/uk-ireland/premier-league');
     const ladbrokesQueue = new Queue;
+    // ladbrokesQueue.enqueue('https://www.ladbrokes.com.au/sports/american-football/ncaaf');
     ladbrokesQueue.enqueue('https://www.ladbrokes.com.au/sports/soccer/uk-ireland/premier-league');
-    ladbrokesQueue.enqueue('https://www.ladbrokes.com.au/sports/soccer/australia/a-league-men');
-    ladbrokesQueue.enqueue('https://www.ladbrokes.com.au/sports/soccer/spain');
-    ladbrokesQueue.enqueue('https://www.ladbrokes.com.au/sports/basketball/usa/nba');
+    // ladbrokesQueue.enqueue('https://www.ladbrokes.com.au/sports/soccer/spain');
+    // ladbrokesQueue.enqueue('https://www.ladbrokes.com.au/sports/basketball/usa/nba');
     while (!ladbrokesQueue.isEmpty()) {
-        console.log(`visiting link ${ladbrokesQueue.peek()}`);
-        const events = await ladbrokesScraper(page, ladbrokesQueue.dequeue(), visitedLinks, ladbrokesQueue);
+        const nextUrl = ladbrokesQueue.dequeue();
+        console.log(`visiting link ${nextUrl}`);
+        visitedLinks.add(nextUrl);
+        const events = await ladbrokesScraper(page, nextUrl, visitedLinks, ladbrokesQueue);
         try {
             for (const event of events) {
-                console.log(`Event: ${event.eventTitle}`);
+                // console.log(event.names);
+                // console.log(event.odds);
+                // console.log(event.title);
+                if (event.eventTitle) {
+                    console.log('Event:', event.eventTitle);
+                }
                 console.log(`Team 1: ${event.team1Name} - ${event.team1Odds}`);
                 if (event.drawOdds) {
                     console.log(`Draw: ${event.drawOdds}`);

@@ -4,18 +4,18 @@ import puppeteer from 'puppeteer';
 export async function ladbrokesScraper(page, url, visitedLinks, queue) {
     try {
         await page.goto(url);
-        // most likely these are the selectors for any sport event on the ladbrokes desktop site
-        await page.waitForSelector('#app #main #page .sport-event-card');
-        await page.waitForSelector('.sports-event-title__name-text');
-        await page.waitForSelector('.price-button-odds-price span');
-        await page.waitForSelector('.price-button-name span');
-        await page.waitForSelector('a');
-        // ladbrokesCrawler(page, visitedLinks, queue);
+        const sportCard = await page.$('#main #page .sport-event-card');
+        if (!sportCard) {
+            return;
+        };
+        
+        findUrls(page, visitedLinks, queue);
         const events = await page.evaluate(() => {
             function collectMarket(eventCard) {
+                // most likely these are the selectors for any sport event on the ladbrokes desktop site
                 const title = eventCard.querySelector('.sports-event-title__name-text');
                 const odds = eventCard.querySelectorAll('.price-button-odds-price span');
-                const names = eventCard.querySelectorAll('.price-button-name span');
+                const names = eventCard.querySelectorAll('.price-button-name .displayTitle');
                 if (names.length == 2) {
                     return {
                         eventTitle: title.innerText.trim(),
@@ -33,6 +33,8 @@ export async function ladbrokesScraper(page, url, visitedLinks, queue) {
                         team2Name: names[2].innerText.trim(),
                         team2Odds: odds[2].innerText.trim(),
                     };
+                } else {
+                    return 'names length is not 2 or 3';
                 }
             }
             const eventsArray = [];
@@ -51,21 +53,33 @@ export async function ladbrokesScraper(page, url, visitedLinks, queue) {
     }
 }
 
-async function ladbrokesCrawler(page, visitedLinks, queue) {
+async function findUrls(page, visitedLinks, queue) {
     try {
         const visitedLinksArray = Array.from(visitedLinks);
         const pageUrls = await page.evaluate((visitedLinksArray) => {
+            function goodUrl(url) {
+                const href = url.getAttribute('href');
+            
+                if (url.href.includes('live')) {
+                    return false;
+                } else if (!href || href == '#' || href == 'javascript:void(0)') {
+                    return false;
+                } else if (url.href.includes('how-to') || url.href.includes('promotions')) {
+                    return false;
+                } else if (url.href.includes('racing')) {
+                    // exclude racing for now
+                    return false;
+                } else if (url.href.includes('futures-outrights')) {
+                    return false;
+                }
+                return true;
+            }
+
             const urls = [];
             const links = document.querySelectorAll('a');
             links.forEach(link => {
-                if (visitedLinksArray.includes(link.href)) return;
-
-                const href = link.getAttribute('href');
-                if (!href || href == '#' || href == 'javascript:void(0)') return;
-
-                if (link.href.includes('sports')) {
-                    urls.push(link.href);
-                }
+                if (visitedLinksArray.includes(link.href) || !goodUrl(link)) return;
+                urls.push(link.href);
             });
             return urls;
         }, visitedLinksArray);
