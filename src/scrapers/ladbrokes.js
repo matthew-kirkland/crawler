@@ -1,6 +1,5 @@
 import puppeteer from 'puppeteer';
 
-
 export async function ladbrokesScraper(page, url, visitedLinks, queue) {
     try {
         await page.goto(url);

@@ -11,13 +11,10 @@ async function main() {
         height: 800
     });
     const visitedLinks = new Set;
+    const ladbrokesQueue = new Queue;
 
     visitedLinks.add('https://www.ladbrokes.com.au/sports/soccer/uk-ireland/premier-league');
-    const ladbrokesQueue = new Queue;
-    // ladbrokesQueue.enqueue('https://www.ladbrokes.com.au/sports/american-football/ncaaf');
     ladbrokesQueue.enqueue('https://www.ladbrokes.com.au/sports/soccer/uk-ireland/premier-league');
-    // ladbrokesQueue.enqueue('https://www.ladbrokes.com.au/sports/soccer/spain');
-    // ladbrokesQueue.enqueue('https://www.ladbrokes.com.au/sports/basketball/usa/nba');
     while (!ladbrokesQueue.isEmpty()) {
         const nextUrl = ladbrokesQueue.dequeue();
         console.log(`visiting link ${nextUrl}`);
@@ -25,9 +22,6 @@ async function main() {
         const events = await ladbrokesScraper(page, nextUrl, visitedLinks, ladbrokesQueue);
         try {
             for (const event of events) {
-                // console.log(event.names);
-                // console.log(event.odds);
-                // console.log(event.title);
                 if (event.eventTitle) {
                     console.log('Event:', event.eventTitle);
                 }
