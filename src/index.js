@@ -21,17 +21,18 @@ async function main() {
     visitedLinks.add(nextUrl);
     const events = await ladbrokesScraper(page, nextUrl, visitedLinks, ladbrokesQueue);
     try {
+      console.log(visitedLinks);
       if (!events) continue;
-      for (const event of events) {
-        if (event.eventTitle) {
-          console.log('Event:', event.eventTitle);
-        }
-        console.log(`Team 1: ${event.team1Name} - ${event.team1Odds}`);
-        if (event.drawOdds) {
-          console.log(`Draw: ${event.drawOdds}`);
-        }
-        console.log(`Team 2: ${event.team2Name} - ${event.team2Odds}`);
-      }
+      // for (const event of events) {
+      //   if (event.eventTitle) {
+      //     console.log('Event:', event.eventTitle);
+      //   }
+      //   console.log(`Team 1: ${event.team1Name} - ${event.team1Odds}`);
+      //   if (event.drawOdds) {
+      //     console.log(`Draw: ${event.drawOdds}`);
+      //   }
+      //   console.log(`Team 2: ${event.team2Name} - ${event.team2Odds}`);
+      // }
     } catch (error) {
       console.error('Error processing events:', error);
     }

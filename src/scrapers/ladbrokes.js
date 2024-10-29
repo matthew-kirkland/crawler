@@ -60,16 +60,16 @@ async function findUrls(page, visitedLinks, queue) {
         const href = url.getAttribute('href');
     
         if (url.href.includes('live')) {
-            return false;
+          return false;
         } else if (!href || href == '#' || href == 'javascript:void(0)') {
-            return false;
+          return false;
         } else if (url.href.includes('how-to') || url.href.includes('promotions')) {
-            return false;
-        } else if (url.href.includes('racing')) {
-            // exclude racing for now
-            return false;
+          return false;
+        } else if (!url.href.includes('sports')) {
+          // exclude racing for now
+          return false;
         } else if (url.href.includes('futures-outrights')) {
-            return false;
+          return false;
         }
         return true;
       }
