@@ -13,10 +13,10 @@ async function main() {
   const visitedLinks = new Set;
   const ladbrokesQueue = new Queue;
 
-  visitedLinks.add('https://www.ladbrokes.com.au/sports/soccer/uk-ireland/premier-league');
   ladbrokesQueue.enqueue('https://www.ladbrokes.com.au/sports/soccer/uk-ireland/premier-league');
   while (!ladbrokesQueue.isEmpty()) {
     const nextUrl = ladbrokesQueue.dequeue();
+    if (visitedLinks.has(nextUrl)) continue;
     console.log(`VISITING LINK ${nextUrl}`);
     visitedLinks.add(nextUrl);
     const events = await ladbrokesScraper(page, nextUrl, visitedLinks, ladbrokesQueue);
