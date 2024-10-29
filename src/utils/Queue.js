@@ -1,25 +1,25 @@
 export class Queue {
-    constructor() {
-        this.queue = [];
-    }
+  constructor() {
+    this.queue = [];
+  }
 
-    enqueue(item) {
-        this.queue.push(item);
-    }
+  enqueue(item) {
+    this.queue.push(item);
+  }
 
-    dequeue() {
-        return this.queue.shift();
-    }
+  dequeue() {
+    return this.queue.shift();
+  }
 
-    isEmpty() {
-        return this.queue.length === 0;
-    }
+  isEmpty() {
+    return this.queue.length === 0;
+  }
 
-    peek() {
-        return this.queue[0];
-    }
+  peek() {
+    return this.queue[0];
+  }
 
-    printQueue() {
-        this.queue.forEach(item => console.log(item));
-    }
+  printQueue() {
+    this.queue.forEach(item => console.log(item));
+  }
 }
