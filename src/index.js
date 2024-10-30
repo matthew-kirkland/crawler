@@ -3,7 +3,7 @@ import { Queue } from './utils/Queue.js';
 import puppeteer from 'puppeteer';
 
 async function main() {
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch();
   const page = await browser.newPage();
   // VIEWPORT IS THE THING INFLUENCING MOBILE OR DESKTOP VERSION !!!!!!!!!!!!!!!!
   await page.setViewport({

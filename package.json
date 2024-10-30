@@ -14,5 +14,8 @@
     "cheerio": "^1.0.0",
     "pupeteer": "^0.0.1",
     "puppeteer": "^23.5.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
   }
 }
