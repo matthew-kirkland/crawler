@@ -3,11 +3,13 @@ This file is meant to show the structure of how the data is stored in the datast
 - Each sport has an array of "Event" objects (games)
 - Each game has a title, a date (in epoch), and an array of Markets offered by different websites
 - Interfaces should be referred to when adding new data
+
+- Javascript hack: you can access e.g the golf array by doing data['golf']
 */
 
 const data: {
-  americanFootball: Event[];
-  australianRules: Event[];
+  american_football: Event[];
+  australian_rules: Event[];
   badminton: Event[];
   baseball: Event[];
   basketball: Event[];
@@ -15,25 +17,25 @@ const data: {
   cricket: Event[];
   darts: Event[];
   esports: Event[];
-  gaelicSports: Event[];
+  gaelic_sports: Event[];
   golf: Event[];
   handball: Event[];
-  iceHockey: Event[];
-  motorSport: Event[];
+  ice_hockey: Event[];
+  motor_sport: Event[];
   netball: Event[];
   pool: Event[];
-  rugbyLeague: Event[];
-  rugbyUnion: Event[];
+  rugby_league: Event[];
+  rugby_union: Event[];
   snooker: Event[];
   soccer: Event[];
-  tableTennis: Event[];
+  table_tennis: Event[];
   tennis: Event[];
   ufc: Event[];
   volleyball: Event[];
   other: Event[];
 } = {
-  americanFootball: [],
-  australianRules: [],
+  american_football: [],
+  australian_rules: [],
   badminton: [],
   baseball: [],
   basketball: [],
@@ -41,18 +43,18 @@ const data: {
   cricket: [],
   darts: [],
   esports: [],
-  gaelicSports: [],
+  gaelic_sports: [],
   golf: [],
   handball: [],
-  iceHockey: [],
-  motorSport: [],
+  ice_hockey: [],
+  motor_sport: [],
   netball: [],
   pool: [],
-  rugbyLeague: [],
-  rugbyUnion: [],
+  rugby_league: [],
+  rugby_union: [],
   snooker: [],
   soccer: [],
-  tableTennis: [],
+  table_tennis: [],
   tennis: [],
   ufc: [],
   volleyball: [],

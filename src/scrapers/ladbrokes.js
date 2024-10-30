@@ -87,3 +87,10 @@ async function findUrls(page, visitedLinks, queue) {
 		console.log(error);
 	}
 }
+
+export function getSportFromUrl(url) {
+  const sport = url.match(/\/sports\/([^/]+)/);
+  if (!sport) return null;
+
+  return sport[1].replace(/-/g, "_");
+}
