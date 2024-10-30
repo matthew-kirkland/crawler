@@ -4,9 +4,7 @@ export async function ladbrokesScraper(page, url, visitedLinks, queue) {
 	try {
 		await page.goto(url);
 		const sportCard = await page.$('#main #page .sport-event-card');
-		if (!sportCard) {
-				return;
-		};
+		if (!sportCard) return;
 		
 		findUrls(page, visitedLinks, queue);
 		const events = await page.evaluate(() => {

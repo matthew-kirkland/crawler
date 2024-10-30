@@ -1,3 +1,10 @@
+/*
+This file is meant to show the structure of how the data is stored in the datastore:
+- Each sport has an array of "Event" objects (games)
+- Each game has a title, a date (in epoch), and an array of Markets offered by different websites
+- Interfaces should be referred to when adding new data
+*/
+
 const data: {
   americanFootball: Event[];
   australianRules: Event[];
@@ -54,6 +61,7 @@ const data: {
 
 interface Event {
   eventTitle: String,
+  date: Number,
   markets: Market[],
 }
 
