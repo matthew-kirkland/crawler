@@ -1,3 +1,5 @@
+import fs from 'fs';
+
 /*
 This file is meant to show the structure of how the data is stored in the datastore:
 - Each sport has an array of "Event" objects (games)
@@ -7,7 +9,7 @@ This file is meant to show the structure of how the data is stored in the datast
 - Javascript hack: you can access e.g the golf array by doing data['golf']
 */
 
-const data: {
+export const data: {
   american_football: Event[];
   australian_rules: Event[];
   badminton: Event[];
@@ -74,4 +76,8 @@ interface Market {
   draw?: Number,
   team2Name: String,
   team2Odds: Number,
+}
+
+export function save() {
+  fs.writeFileSync('saved_data.json', JSON.stringify(data, null, 2));
 }

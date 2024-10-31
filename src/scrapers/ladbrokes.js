@@ -1,5 +1,5 @@
 import puppeteer from 'puppeteer';
-import { data } from '../data.js';
+import { data } from '../datastore.js';
 
 export async function ladbrokesScraper(page, url, visitedLinks, queue) {
   try {
@@ -45,7 +45,8 @@ export async function ladbrokesScraper(page, url, visitedLinks, queue) {
       });
       return eventsArray;
     });
-    return events;
+    writeToData(url, events);
+    // return events;
   } catch (error) {
     console.log('Error fetching page: ', error);
   }
@@ -90,8 +91,41 @@ async function findUrls(page, visitedLinks, queue) {
 }
 
 export function getSportFromUrl(url) {
-  const sport = url.match(/\/sports\/([^/]+)/).toLowerCase();
+  const sport = url.match(/\/sports\/([^/]+)/);
   if (!sport) return null;
-
   return sport[1].replace(/-/g, "_");
+}
+
+function writeToData(url, events) {
+  const sport = getSportFromUrl(url);
+  for (const event of events) {
+    const title = event.team1Name.toLowerCase() + ' - ' + event.team2Name.toLowerCase();
+    // puts the current date but should later be the actual date of the event
+    const date = Date.now();
+    let newMarket;
+    if (event.drawOdds) {
+      newMarket = {
+        website: 'Ladbrokes',
+        team1Name: event.team1Name,
+        team1Odds: event.team1Odds,
+        drawOdds: event.drawOdds,
+        team2Name: event.team2Name,
+        team2Odds: event.team2Odds,
+      }
+    } else {
+      newMarket = {
+        website: 'Ladbrokes',
+        team1Name: event.team1Name,
+        team1Odds: event.team1Odds,
+        team2Name: event.team2Name,
+        team2Odds: event.team2Odds,
+      };
+    }
+    const newEvent = {
+      eventTitle: title,
+      date: date,
+      markets: [newMarket],
+    };
+    data[sport].push(newEvent);
+  }
 }
