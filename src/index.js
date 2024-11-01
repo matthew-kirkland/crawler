@@ -1,9 +1,11 @@
 import { ladbrokesScraper } from './scrapers/ladbrokes.js';
 import { Queue } from './utils/Queue.js';
-import { save } from './datastore.js';
+import { save, load, clear } from './datastore.js';
 import puppeteer from 'puppeteer';
 
 async function main() {
+  // clear();
+  load();
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   // VIEWPORT IS THE THING INFLUENCING MOBILE OR DESKTOP VERSION !!!!!!!!!!!!!!!!
@@ -22,23 +24,7 @@ async function main() {
     if (visitedLinks.has(nextUrl)) continue;
     console.log(`VISITING LINK ${nextUrl}`);
     visitedLinks.add(nextUrl);
-    /*const events = */await ladbrokesScraper(page, nextUrl, visitedLinks, ladbrokesQueue);
-    // try {
-    //   console.log(visitedLinks);
-    //   if (!events) continue;
-    //   // for (const event of events) {
-    //   //   if (event.eventTitle) {
-    //   //     console.log('Event:', event.eventTitle);
-    //   //   }
-    //   //   console.log(`Team 1: ${event.team1Name} - ${event.team1Odds}`);
-    //   //   if (event.drawOdds) {
-    //   //     console.log(`Draw: ${event.drawOdds}`);
-    //   //   }
-    //   //   console.log(`Team 2: ${event.team2Name} - ${event.team2Odds}`);
-    //   // }
-    // } catch (error) {
-    //   console.error('Error processing events:', error);
-    // }
+    await ladbrokesScraper(page, nextUrl, visitedLinks, ladbrokesQueue);
     counter++;
   }
   save();

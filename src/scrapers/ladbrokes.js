@@ -121,11 +121,16 @@ function writeToData(url, events) {
         team2Odds: event.team2Odds,
       };
     }
-    const newEvent = {
-      eventTitle: title,
-      date: date,
-      markets: [newMarket],
-    };
-    data[sport].push(newEvent);
+    const existingEvent = data[sport].find(e => e.eventTitle === title);
+    if (existingEvent) {
+      existingEvent.markets.push(newMarket);
+    } else {
+      const newEvent = {
+        eventTitle: title,
+        date: date,
+        markets: [newMarket],
+      };
+      data[sport].push(newEvent);
+    }
   }
 }
