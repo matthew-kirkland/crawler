@@ -12,7 +12,11 @@
   "dependencies": {
     "axios": "^1.7.7",
     "cheerio": "^1.0.0",
+    "fs-extra": "^11.2.0",
     "pupeteer": "^0.0.1",
     "puppeteer": "^23.5.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
   }
 }
