@@ -5,7 +5,14 @@ export async function ladbrokesScraper(page, url, visitedLinks, queue) {
   try {
     await page.goto(url, { waitUntil: 'networkidle2' });
     const sportCard = await page.$('#main #page .sport-event-card');
-    if (!sportCard) return;
+    if (!sportCard) return null;
+
+    const filterPage = await page.$('#main #page .matches-filter');
+    if (filterPage) {
+      console.log('QUEUEING FILTERS');
+      await queueFilters(page, queue);
+      return null;
+    }
     
     findUrls(page, visitedLinks, queue);
     const events = await page.evaluate(() => {
@@ -49,6 +56,20 @@ export async function ladbrokesScraper(page, url, visitedLinks, queue) {
     // return events;
   } catch (error) {
     console.error('Error fetching page: ', error);
+  }
+}
+
+async function queueFilters(page, queue) {
+  const filterUrls = await page.evaluate(() => {
+    const urls = [];
+    const filters = document.querySelectorAll('#main #page .matches-filter a');
+    filters.forEach(filter => {
+      urls.push(filter.href);
+    });
+    return urls;
+  });
+  for (const url of filterUrls) {
+    queue.enqueue(url);
   }
 }
 
