@@ -3,7 +3,7 @@ import { data } from '../datastore.js';
 
 export async function ladbrokesScraper(page, url, visitedLinks, queue) {
   try {
-    await page.goto(url);
+    await page.goto(url, { waitUntil: 'networkidle2' });
     const sportCard = await page.$('#main #page .sport-event-card');
     if (!sportCard) return;
     
@@ -48,7 +48,7 @@ export async function ladbrokesScraper(page, url, visitedLinks, queue) {
     writeToData(url, events);
     // return events;
   } catch (error) {
-    console.log('Error fetching page: ', error);
+    console.error('Error fetching page: ', error);
   }
 }
 
@@ -86,7 +86,7 @@ async function findUrls(page, visitedLinks, queue) {
         queue.enqueue(url);
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
@@ -98,6 +98,8 @@ export function getSportFromUrl(url) {
 
 function writeToData(url, events) {
   const sport = getSportFromUrl(url);
+  if (!sport) return;
+
   for (const event of events) {
     const title = event.team1Name.toLowerCase() + ' - ' + event.team2Name.toLowerCase();
     // puts the current date but should later be the actual date of the event
