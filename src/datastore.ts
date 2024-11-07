@@ -32,7 +32,7 @@ export let data: {
   soccer: Event[];
   table_tennis: Event[];
   tennis: Event[];
-  ufc: Event[];
+  mma: Event[];
   volleyball: Event[];
   other: Event[];
 } = {
@@ -58,7 +58,7 @@ export let data: {
   soccer: [],
   table_tennis: [],
   tennis: [],
-  ufc: [],
+  mma: [],
   volleyball: [],
   other: [],
 }
@@ -111,7 +111,7 @@ export function clear() {
     soccer: [],
     table_tennis: [],
     tennis: [],
-    ufc: [],
+    mma: [],
     volleyball: [],
     other: [],
   };
