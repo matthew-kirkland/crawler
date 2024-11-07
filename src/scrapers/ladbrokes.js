@@ -1,5 +1,6 @@
 import puppeteer from 'puppeteer';
 import { data } from '../datastore.js';
+import { eventExists } from '../utils/other.js';
 
 export async function ladbrokesScraper(page, url, visitedLinks, queue) {
   try {
@@ -84,7 +85,7 @@ async function findUrls(page, visitedLinks, queue) {
           return false;
         } else if (!href || href == '#' || href == 'javascript:void(0)') {
           return false;
-        } else if (url.href.includes('how-to') || url.href.includes('promotions')) {
+        } else if (url.href.includes('any-team-vs-any-team') || url.href.includes('#rounds')) {
           return false;
         } else if (!url.href.includes('sports')) {
           // exclude racing for now
@@ -119,7 +120,9 @@ export function getSportFromUrl(url) {
 
 function writeToData(url, events) {
   const sport = getSportFromUrl(url);
-  if (!sport) return;
+  if (sport === null) {
+    sport = 'other';
+  }
 
   for (const event of events) {
     const title = event.team1Name.toLowerCase() + ' - ' + event.team2Name.toLowerCase();
@@ -144,8 +147,8 @@ function writeToData(url, events) {
         team2Odds: event.team2Odds,
       };
     }
-    const existingEvent = data[sport].find(e => e.eventTitle === title);
-    if (existingEvent) {
+    const existingEvent = eventExists(title, sport);
+    if (existingEvent != null) {
       existingEvent.markets.push(newMarket);
     } else {
       const newEvent = {

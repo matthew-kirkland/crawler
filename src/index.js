@@ -4,11 +4,11 @@ import { save, load, clear } from './datastore.js';
 import puppeteer from 'puppeteer';
 
 async function main() {
-  clear();
+  // clear();
   load();
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  // VIEWPORT IS THE THING INFLUENCING MOBILE OR DESKTOP VERSION !!!!!!!!!!!!!!!!
+  // VIEWPORT IS THE THING INFLUENCING MOBILE VS DESKTOP VERSION !!!!!!!!!!!!!!!!
   await page.setViewport({
     width: 1280,
     height: 800
