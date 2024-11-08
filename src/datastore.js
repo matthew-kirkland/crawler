@@ -30,7 +30,7 @@ export let data = {
     soccer: [],
     table_tennis: [],
     tennis: [],
-    ufc: [],
+    mma: [],
     volleyball: [],
     other: [],
 };
@@ -65,7 +65,7 @@ export function clear() {
         soccer: [],
         table_tennis: [],
         tennis: [],
-        ufc: [],
+        mma: [],
         volleyball: [],
         other: [],
     };

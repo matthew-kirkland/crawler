@@ -8,7 +8,7 @@ async function main() {
   load();
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  // VIEWPORT IS THE THING INFLUENCING MOBILE OR DESKTOP VERSION !!!!!!!!!!!!!!!!
+  // VIEWPORT IS THE THING INFLUENCING MOBILE VS DESKTOP VERSION !!!!!!!!!!!!!!!!
   await page.setViewport({
     width: 1280,
     height: 800
@@ -19,12 +19,15 @@ async function main() {
   ladbrokesQueue.enqueue('https://www.ladbrokes.com.au/sports/soccer/uk-ireland/premier-league');
   // for testing data persistence the counter exists
   let counter = 0;
-  while (!ladbrokesQueue.isEmpty() && counter < 10) {
+  while (!ladbrokesQueue.isEmpty()) {
     const nextUrl = ladbrokesQueue.dequeue();
     if (visitedLinks.has(nextUrl)) continue;
     console.log(`VISITING LINK ${nextUrl}`);
     visitedLinks.add(nextUrl);
-    await ladbrokesScraper(page, nextUrl, visitedLinks, ladbrokesQueue);
+    const ret = await ladbrokesScraper(page, nextUrl, visitedLinks, ladbrokesQueue);
+    if (ret === null) {
+      console.log(`NOT THE RIGHT PAGE FOR MARKETS`);
+    }
     counter++;
   }
   save();

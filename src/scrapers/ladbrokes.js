@@ -1,11 +1,28 @@
 import puppeteer from 'puppeteer';
 import { data } from '../datastore.js';
+import { eventExists } from '../utils/other.js';
+import { Queue } from '../utils/Queue.js';
 
+/**
+ * The main web scraper for the Ladbrokes website
+ * @param {page} page the puppeteer page object
+ * @param {String} url url currently being visited
+ * @param {Set} visitedLinks set of urls already visited
+ * @param {Queue} queue queue of urls to visit
+ * @returns 
+ */
 export async function ladbrokesScraper(page, url, visitedLinks, queue) {
   try {
-    await page.goto(url);
+    await page.goto(url, { waitUntil: 'networkidle2' });
     const sportCard = await page.$('#main #page .sport-event-card');
-    if (!sportCard) return;
+    if (!sportCard) return null;
+
+    const filterPage = await page.$('#main #page .matches-filter');
+    if (filterPage) {
+      console.log('QUEUEING FILTERS');
+      await queueFilters(page, queue);
+      return null;
+    }
     
     findUrls(page, visitedLinks, queue);
     const events = await page.evaluate(() => {
@@ -14,26 +31,21 @@ export async function ladbrokesScraper(page, url, visitedLinks, queue) {
         const title = eventCard.querySelector('.sports-event-title__name-text');
         const odds = eventCard.querySelectorAll('.price-button-odds-price span');
         const names = eventCard.querySelectorAll('.price-button-name .displayTitle');
-        if (names.length == 2) {
-          return {
-            eventTitle: title.innerText.trim(),
-            team1Name: names[0].innerText.trim(),
-            team1Odds: odds[0].innerText.trim(),
-            team2Name: names[1].innerText.trim(),
-            team2Odds: odds[1].innerText.trim(),
-          };
-        } else if (names.length == 3) {
-          return {
-            eventTitle: title.innerText.trim(),
-            team1Name: names[0].innerText.trim(),
-            team1Odds: odds[0].innerText.trim(),
-            drawOdds: odds[1].innerText.trim(),
-            team2Name: names[2].innerText.trim(),
-            team2Odds: odds[2].innerText.trim(),
-          };
-        } else {
-          return 'names length is not 2 or 3';
-        }
+
+        const eventTitle = title.innerText.trim();
+        const team1Name = names[0]?.innerText.trim();
+        const team1Odds = odds[0]?.innerText.trim();
+        const team2Name = names[names.length - 1]?.innerText.trim();
+        const team2Odds = odds[odds.length - 1]?.innerText.trim();
+        const drawOdds = names.length === 3 ? odds[1]?.innerText.trim() : undefined;
+        return {
+          eventTitle,
+          team1Name,
+          team1Odds,
+          team2Name,
+          team2Odds,
+          ...(drawOdds && { drawOdds })
+        };
       }
       const eventsArray = [];
       const eventCards = document.querySelectorAll('#main #page .sport-event-card');
@@ -46,12 +58,36 @@ export async function ladbrokesScraper(page, url, visitedLinks, queue) {
       return eventsArray;
     });
     writeToData(url, events);
-    // return events;
   } catch (error) {
-    console.log('Error fetching page: ', error);
+    console.error('Error fetching page: ', error);
   }
 }
 
+/**
+ * Searches for all filter elements on the page and adds their url to the queue
+ * @param {page} page puppeteer page object
+ * @param {Queue} queue queue of urls to visit
+ */
+async function queueFilters(page, queue) {
+  const filterUrls = await page.evaluate(() => {
+    const urls = [];
+    const filters = document.querySelectorAll('#main #page .matches-filter a');
+    filters.forEach(filter => {
+      urls.push(filter.href);
+    });
+    return urls;
+  });
+  for (const url of filterUrls) {
+    queue.enqueue(url);
+  }
+}
+
+/**
+ * Finds all desirable links on the page and adds it to the queue
+ * @param {page} page puppeteer page object
+ * @param {Set} visitedLinks set of urls already visited
+ * @param {Queue} queue queue of urls to visit
+ */
 async function findUrls(page, visitedLinks, queue) {
   try {
     const visitedLinksArray = Array.from(visitedLinks);
@@ -63,7 +99,7 @@ async function findUrls(page, visitedLinks, queue) {
           return false;
         } else if (!href || href == '#' || href == 'javascript:void(0)') {
           return false;
-        } else if (url.href.includes('how-to') || url.href.includes('promotions')) {
+        } else if (url.href.includes('any-team-vs-any-team') || url.href.includes('#round')) {
           return false;
         } else if (!url.href.includes('sports')) {
           // exclude racing for now
@@ -86,18 +122,32 @@ async function findUrls(page, visitedLinks, queue) {
         queue.enqueue(url);
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
+/**
+ * Retrieves the sport of the current page from the url
+ * @param {String} url 
+ * @returns {String} the sport within the url
+ */
 export function getSportFromUrl(url) {
   const sport = url.match(/\/sports\/([^/]+)/);
   if (!sport) return null;
   return sport[1].replace(/-/g, "_");
 }
 
+/**
+ * Adds the events to the data in the respective sport
+ * @param {String} url url of current page
+ * @param {Array} events array of extra events to be added to the data
+ */
 function writeToData(url, events) {
   const sport = getSportFromUrl(url);
+  if (sport === null) {
+    sport = 'other';
+  }
+
   for (const event of events) {
     const title = event.team1Name.toLowerCase() + ' - ' + event.team2Name.toLowerCase();
     // puts the current date but should later be the actual date of the event
@@ -121,8 +171,8 @@ function writeToData(url, events) {
         team2Odds: event.team2Odds,
       };
     }
-    const existingEvent = data[sport].find(e => e.eventTitle === title);
-    if (existingEvent) {
+    const existingEvent = eventExists(title, sport);
+    if (existingEvent != null) {
       existingEvent.markets.push(newMarket);
     } else {
       const newEvent = {
