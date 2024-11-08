@@ -31,26 +31,21 @@ export async function ladbrokesScraper(page, url, visitedLinks, queue) {
         const title = eventCard.querySelector('.sports-event-title__name-text');
         const odds = eventCard.querySelectorAll('.price-button-odds-price span');
         const names = eventCard.querySelectorAll('.price-button-name .displayTitle');
-        if (names.length == 2) {
-          return {
-            eventTitle: title.innerText.trim(),
-            team1Name: names[0].innerText.trim(),
-            team1Odds: odds[0].innerText.trim(),
-            team2Name: names[1].innerText.trim(),
-            team2Odds: odds[1].innerText.trim(),
-          };
-        } else if (names.length == 3) {
-          return {
-            eventTitle: title.innerText.trim(),
-            team1Name: names[0].innerText.trim(),
-            team1Odds: odds[0].innerText.trim(),
-            drawOdds: odds[1].innerText.trim(),
-            team2Name: names[2].innerText.trim(),
-            team2Odds: odds[2].innerText.trim(),
-          };
-        } else {
-          return 'names length is not 2 or 3';
-        }
+
+        const eventTitle = title.innerText.trim();
+        const team1Name = names[0]?.innerText.trim();
+        const team1Odds = odds[0]?.innerText.trim();
+        const team2Name = names[names.length - 1]?.innerText.trim();
+        const team2Odds = odds[odds.length - 1]?.innerText.trim();
+        const drawOdds = names.length === 3 ? odds[1]?.innerText.trim() : undefined;
+        return {
+          eventTitle,
+          team1Name,
+          team1Odds,
+          team2Name,
+          team2Odds,
+          ...(drawOdds && { drawOdds })
+        };
       }
       const eventsArray = [];
       const eventCards = document.querySelectorAll('#main #page .sport-event-card');
