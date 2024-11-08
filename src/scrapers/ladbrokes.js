@@ -99,7 +99,7 @@ async function findUrls(page, visitedLinks, queue) {
           return false;
         } else if (!href || href == '#' || href == 'javascript:void(0)') {
           return false;
-        } else if (url.href.includes('any-team-vs-any-team') || url.href.includes('#rounds')) {
+        } else if (url.href.includes('any-team-vs-any-team') || url.href.includes('#round')) {
           return false;
         } else if (!url.href.includes('sports')) {
           // exclude racing for now
