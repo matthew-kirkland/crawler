@@ -1,7 +1,16 @@
 import puppeteer from 'puppeteer';
 import { data } from '../datastore.js';
 import { eventExists } from '../utils/other.js';
+import { Queue } from '../utils/Queue.js';
 
+/**
+ * The main web scraper for the Ladbrokes website
+ * @param {page} page the puppeteer page object
+ * @param {String} url url currently being visited
+ * @param {Set} visitedLinks set of urls already visited
+ * @param {Queue} queue queue of urls to visit
+ * @returns 
+ */
 export async function ladbrokesScraper(page, url, visitedLinks, queue) {
   try {
     await page.goto(url, { waitUntil: 'networkidle2' });
@@ -54,12 +63,16 @@ export async function ladbrokesScraper(page, url, visitedLinks, queue) {
       return eventsArray;
     });
     writeToData(url, events);
-    // return events;
   } catch (error) {
     console.error('Error fetching page: ', error);
   }
 }
 
+/**
+ * Searches for all filter elements on the page and adds their url to the queue
+ * @param {page} page puppeteer page object
+ * @param {Queue} queue queue of urls to visit
+ */
 async function queueFilters(page, queue) {
   const filterUrls = await page.evaluate(() => {
     const urls = [];
@@ -74,6 +87,12 @@ async function queueFilters(page, queue) {
   }
 }
 
+/**
+ * Finds all desirable links on the page and adds it to the queue
+ * @param {page} page puppeteer page object
+ * @param {Set} visitedLinks set of urls already visited
+ * @param {Queue} queue queue of urls to visit
+ */
 async function findUrls(page, visitedLinks, queue) {
   try {
     const visitedLinksArray = Array.from(visitedLinks);
@@ -112,12 +131,22 @@ async function findUrls(page, visitedLinks, queue) {
   }
 }
 
+/**
+ * Retrieves the sport of the current page from the url
+ * @param {String} url 
+ * @returns {String} the sport within the url
+ */
 export function getSportFromUrl(url) {
   const sport = url.match(/\/sports\/([^/]+)/);
   if (!sport) return null;
   return sport[1].replace(/-/g, "_");
 }
 
+/**
+ * Adds the events to the data in the respective sport
+ * @param {String} url url of current page
+ * @param {Array} events array of extra events to be added to the data
+ */
 function writeToData(url, events) {
   const sport = getSportFromUrl(url);
   if (sport === null) {
