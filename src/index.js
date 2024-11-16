@@ -1,11 +1,13 @@
 import { ladbrokesScraper } from './scrapers/ladbrokes.js';
 import { Queue } from './utils/Queue.js';
 import { save, load, clear } from './datastore.js';
+import { connect, close } from './database.js';
 import puppeteer from 'puppeteer';
 
 async function main() {
   // clear();
-  load();
+  // load();
+  await connect();
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   // VIEWPORT IS THE THING INFLUENCING MOBILE VS DESKTOP VERSION !!!!!!!!!!!!!!!!
@@ -30,8 +32,9 @@ async function main() {
     }
     counter++;
   }
-  save();
+  // save();
   await browser.close();
+  await close();
 }
 
 main();
