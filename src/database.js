@@ -21,8 +21,8 @@ export async function close() {
 }
 
 export async function writeToData(events, database, sport) {
-  const collection = database.collection(sport);
-  const collectionEvents = await collection.find({}).toArray();
+  const sportDocument = await database.collection("Sports").findOne({ sport: sport});
+  const documentEvents = sportDocument.data;
 
   for (const event of events) {
     const title = event.team1Name.toLowerCase() + ' - ' + event.team2Name.toLowerCase();
@@ -38,18 +38,21 @@ export async function writeToData(events, database, sport) {
       newMarket.drawOdds = event.drawOdds;
     }
 
-    const existingEvent = eventExists(title, collectionEvents);
+    const existingEvent = eventExists(title, documentEvents);
     if (existingEvent != null) {
-      collection.updateOne(
-        { _id: existingEvent._id },
-        { $push: { markets: newMarket } }
+      await database.collection("Sports").updateOne(
+        { sport: sport, "data.eventTitle": existingEvent.eventTitle },
+        { $push: { "data.$.markets": newMarket } }
       );
     } else {
       const newEvent = {
         eventTitle: title,
         markets: [newMarket],
       };
-      collection.insertOne(newEvent);
+      await database.collection("Sports").updateOne(
+        { sport: sport },
+        { $push: { data: newEvent } }
+      );
     }
   }
 }

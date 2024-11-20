@@ -1,5 +1,18 @@
 import { writeToData } from '../database.js';
 
+const uri = 'mongodb+srv://matthewkirkland049:gCX1dcbjuEShs9WH@cluster0.ox2xm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+let db;
+let client;
+
+beforeAll(async () => {
+  client = new MongoClient(uri);
+  await client.connect();
+  db = client.db('TEST_Odds-Data');
+});
+
+afterAll(async () => {
+  await client.close();
+})
 
 describe('Database testing', () => {
   test('Empty database, first game added', async () => {
