@@ -1,4 +1,4 @@
-import { writeToData } from '../scrapers/ladbrokes.js';
+import { writeToData } from '../database.js';
 
 
 describe('Database testing', () => {

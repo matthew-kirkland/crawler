@@ -1,7 +1,8 @@
 import puppeteer from 'puppeteer';
 import { data } from '../datastore.js';
-import { eventExists } from '../utils/other.js';
 import { Queue } from '../utils/Queue.js';
+import { MongoClient } from 'mongodb';
+import { writeToData } from '../database.js';
 
 /**
  * The main web scraper for the Ladbrokes website
@@ -11,7 +12,7 @@ import { Queue } from '../utils/Queue.js';
  * @param {Queue} queue queue of urls to visit
  * @returns 
  */
-export async function ladbrokesScraper(page, url, visitedLinks, queue) {
+export async function ladbrokesScraper(page, url, visitedLinks, queue, database) {
   try {
     await page.goto(url, { waitUntil: 'networkidle2' });
     const sportCard = await page.$('#main #page .sport-event-card');
@@ -57,7 +58,8 @@ export async function ladbrokesScraper(page, url, visitedLinks, queue) {
       });
       return eventsArray;
     });
-    writeToData(url, events);
+    const sport = getSportFromUrl(url);
+    await writeToData(events, database, sport);
   } catch (error) {
     console.error('Error fetching page: ', error);
   }
@@ -133,54 +135,46 @@ async function findUrls(page, visitedLinks, queue) {
  */
 export function getSportFromUrl(url) {
   const sport = url.match(/\/sports\/([^/]+)/);
-  if (!sport) return null;
+  if (!sport) return 'other';
   return sport[1].replace(/-/g, "_");
 }
 
-/**
+/** LOWKEY PUT THIS IN A DIFFERENT FILE THIS CAN BE USED FOR ALL SCRAPERS, PASS THE SPORT INTO THE FUNCTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  * Adds the events to the data in the respective sport
  * @param {String} url url of current page
  * @param {Array} events array of extra events to be added to the data
  */
-function writeToData(url, events) {
-  const sport = getSportFromUrl(url);
-  if (sport === null) {
-    sport = 'other';
-  }
+// export async function writeToData(url, events, database) {
+//   const sport = getSportFromUrl(url);
+//   const collection = database.collection(sport);
+//   const collectionEvents = await collection.find({}).toArray();
 
-  for (const event of events) {
-    const title = event.team1Name.toLowerCase() + ' - ' + event.team2Name.toLowerCase();
-    // puts the current date but should later be the actual date of the event
-    const date = Date.now();
-    let newMarket;
-    if (event.drawOdds) {
-      newMarket = {
-        website: 'Ladbrokes',
-        team1Name: event.team1Name,
-        team1Odds: event.team1Odds,
-        drawOdds: event.drawOdds,
-        team2Name: event.team2Name,
-        team2Odds: event.team2Odds,
-      }
-    } else {
-      newMarket = {
-        website: 'Ladbrokes',
-        team1Name: event.team1Name,
-        team1Odds: event.team1Odds,
-        team2Name: event.team2Name,
-        team2Odds: event.team2Odds,
-      };
-    }
-    const existingEvent = eventExists(title, sport);
-    if (existingEvent != null) {
-      existingEvent.markets.push(newMarket);
-    } else {
-      const newEvent = {
-        eventTitle: title,
-        date: date,
-        markets: [newMarket],
-      };
-      data[sport].push(newEvent);
-    }
-  }
-}
+//   for (const event of events) {
+//     const title = event.team1Name.toLowerCase() + ' - ' + event.team2Name.toLowerCase();
+//     // puts the current date but should later be the actual date of the event
+//     let newMarket = {
+//       website: 'Ladbrokes',
+//       team1Name: event.team1Name,
+//       team1Odds: event.team1Odds,
+//       team2Name: event.team2Name,
+//       team2Odds: event.team2Odds,
+//     };
+//     if (event.drawOdds) {
+//       newMarket.drawOdds = event.drawOdds;
+//     }
+
+//     const existingEvent = eventExists(title, collectionEvents);
+//     if (existingEvent != null) {
+//       collection.updateOne(
+//         { _id: existingEvent._id },
+//         { $push: { markets: newMarket } }
+//       );
+//     } else {
+//       const newEvent = {
+//         eventTitle: title,
+//         markets: [newMarket],
+//       };
+//       collection.insertOne(newEvent);
+//     }
+//   }
+// }

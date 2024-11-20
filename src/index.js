@@ -7,7 +7,7 @@ import puppeteer from 'puppeteer';
 async function main() {
   // clear();
   // load();
-  await connect();
+  const database = await connect();
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   // VIEWPORT IS THE THING INFLUENCING MOBILE VS DESKTOP VERSION !!!!!!!!!!!!!!!!
@@ -26,7 +26,7 @@ async function main() {
     if (visitedLinks.has(nextUrl)) continue;
     console.log(`VISITING LINK ${nextUrl}`);
     visitedLinks.add(nextUrl);
-    const ret = await ladbrokesScraper(page, nextUrl, visitedLinks, ladbrokesQueue);
+    const ret = await ladbrokesScraper(page, nextUrl, visitedLinks, ladbrokesQueue, database);
     if (ret === null) {
       console.log(`NOT THE RIGHT PAGE FOR MARKETS`);
     }
