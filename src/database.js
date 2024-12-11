@@ -21,33 +21,22 @@ export async function close() {
 }
 
 export async function writeToData(events, database, sport) {
-  const sportDocument = await database.collection("Sports").findOne({ sport: sport});
+  const sportDocument = await database.collection("Sports").findOne({ sport: sport });
   const documentEvents = sportDocument.data;
 
   for (const event of events) {
     const title = event.team1Name.toLowerCase() + ' - ' + event.team2Name.toLowerCase();
-    // puts the current date but should later be the actual date of the event
-    let newMarket = {
-      website: 'Ladbrokes',
-      team1Name: event.team1Name,
-      team1Odds: event.team1Odds,
-      team2Name: event.team2Name,
-      team2Odds: event.team2Odds,
-    };
-    if (event.drawOdds) {
-      newMarket.drawOdds = event.drawOdds;
-    }
-
+    // add the date here later
     const existingEvent = eventExists(title, documentEvents);
     if (existingEvent != null) {
       await database.collection("Sports").updateOne(
         { sport: sport, "data.eventTitle": existingEvent.eventTitle },
-        { $push: { "data.$.markets": newMarket } }
+        { $push: { "data.$.markets": event } }
       );
     } else {
       const newEvent = {
         eventTitle: title,
-        markets: [newMarket],
+        markets: [event],
       };
       await database.collection("Sports").updateOne(
         { sport: sport },

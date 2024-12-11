@@ -29,18 +29,17 @@ export async function ladbrokesScraper(page, url, visitedLinks, queue, database)
     const events = await page.evaluate(() => {
       function collectMarket(eventCard) {
         // most likely these are the selectors for any sport event on the ladbrokes desktop site
-        const title = eventCard.querySelector('.sports-event-title__name-text');
         const odds = eventCard.querySelectorAll('.price-button-odds-price span');
         const names = eventCard.querySelectorAll('.price-button-name .displayTitle');
 
-        const eventTitle = title.innerText.trim();
+        const website = 'Ladbrokes';
         const team1Name = names[0]?.innerText.trim();
         const team1Odds = odds[0]?.innerText.trim();
         const team2Name = names[names.length - 1]?.innerText.trim();
         const team2Odds = odds[odds.length - 1]?.innerText.trim();
         const drawOdds = names.length === 3 ? odds[1]?.innerText.trim() : undefined;
         return {
-          eventTitle,
+          website,
           team1Name,
           team1Odds,
           team2Name,
