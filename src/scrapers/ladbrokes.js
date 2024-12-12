@@ -1,5 +1,4 @@
 import puppeteer from 'puppeteer';
-import { data } from '../datastore.js';
 import { Queue } from '../utils/Queue.js';
 import { MongoClient } from 'mongodb';
 import { writeToData } from '../database.js';
@@ -137,43 +136,3 @@ export function getSportFromUrl(url) {
   if (!sport) return 'other';
   return sport[1].replace(/-/g, "_");
 }
-
-/** LOWKEY PUT THIS IN A DIFFERENT FILE THIS CAN BE USED FOR ALL SCRAPERS, PASS THE SPORT INTO THE FUNCTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * Adds the events to the data in the respective sport
- * @param {String} url url of current page
- * @param {Array} events array of extra events to be added to the data
- */
-// export async function writeToData(url, events, database) {
-//   const sport = getSportFromUrl(url);
-//   const collection = database.collection(sport);
-//   const collectionEvents = await collection.find({}).toArray();
-
-//   for (const event of events) {
-//     const title = event.team1Name.toLowerCase() + ' - ' + event.team2Name.toLowerCase();
-//     // puts the current date but should later be the actual date of the event
-//     let newMarket = {
-//       website: 'Ladbrokes',
-//       team1Name: event.team1Name,
-//       team1Odds: event.team1Odds,
-//       team2Name: event.team2Name,
-//       team2Odds: event.team2Odds,
-//     };
-//     if (event.drawOdds) {
-//       newMarket.drawOdds = event.drawOdds;
-//     }
-
-//     const existingEvent = eventExists(title, collectionEvents);
-//     if (existingEvent != null) {
-//       collection.updateOne(
-//         { _id: existingEvent._id },
-//         { $push: { markets: newMarket } }
-//       );
-//     } else {
-//       const newEvent = {
-//         eventTitle: title,
-//         markets: [newMarket],
-//       };
-//       collection.insertOne(newEvent);
-//     }
-//   }
-// }
