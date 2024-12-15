@@ -257,14 +257,166 @@ describe('Database testing', () => {
 
   describe('Multiple games at a time', () => {
     test('Empty database, multiple games added', async () => {
-      expect(1+1).toEqual(2);
+      const events = [
+        {
+          website: 'Ladbrokes',
+          team1Name: 'Team1',
+          team1Odds: 1.5,
+          team2Name: 'Team2',
+          team2Odds: 2.5,
+        },
+        {
+          website: 'Ladbrokes',
+          team1Name: 'Team3',
+          team1Odds: 3.5,
+          team2Name: 'Team4',
+          team2Odds: 4.5,
+        },
+      ];
+      await writeToData(events, db, 'soccer');
+      const response = await db.collection('Sports').findOne({ sport: 'soccer' });
+      expect(response.data.length).toStrictEqual(2);
     });
-    describe('New games adding to empty and non-empty arrays', () => {
-      test('Games added to empty and non-empty sport arrays', async () => {
-        expect(1+1).toEqual(2);
+    describe('New games adding to non-empty array', () => {
+      test('New events from different website', async () => {
+        const firstEvent = {
+          eventTitle: 'team1 - team2',
+          markets: [
+            {
+              website: 'Ladbrokes',
+              team1Name: 'Team1',
+              team1Odds: 1.5,
+              team2Name: 'Team2',
+              team2Odds: 2.5,
+            },
+          ],
+        };
+        await db.collection('Sports').updateOne({ sport: 'soccer' }, { $set: { data: [firstEvent] } });
+        const events = [
+          {
+            website: 'Sportsbet',
+            team1Name: 'Team3',
+            team1Odds: 3.5,
+            team2Name: 'Team4',
+            team2Odds: 4.5,
+          },
+          {
+            website: 'Sportsbet',
+            team1Name: 'Team5',
+            team1Odds: 5.5,
+            team2Name: 'Team6',
+            team2Odds: 6.5,
+          },
+        ];
+        await writeToData(events, db, 'soccer');
+        const response = await db.collection('Sports').findOne({ sport: 'soccer' });
+        expect(response.data.length).toStrictEqual(3);
       });
-      test('Events entered with different website markets', async () => {
-        expect(1+1).toEqual(2);
+      test('New events from same website', async () => {
+        const firstEvent = {
+          eventTitle: 'team1 - team2',
+          markets: [
+            {
+              website: 'Ladbrokes',
+              team1Name: 'Team1',
+              team1Odds: 1.5,
+              team2Name: 'Team2',
+              team2Odds: 2.5,
+            },
+          ],
+        };
+        await db.collection('Sports').updateOne({ sport: 'soccer' }, { $set: { data: [firstEvent] } });
+        const events = [
+          {
+            website: 'Ladbrokes',
+            team1Name: 'Team3',
+            team1Odds: 3.5,
+            team2Name: 'Team4',
+            team2Odds: 4.5,
+          },
+          {
+            website: 'Ladbrokes',
+            team1Name: 'Team5',
+            team1Odds: 5.5,
+            team2Name: 'Team6',
+            team2Odds: 6.5,
+          },
+        ];
+        await writeToData(events, db, 'soccer');
+        const response = await db.collection('Sports').findOne({ sport: 'soccer' });
+        expect(response.data.length).toStrictEqual(3);
+      });
+      test('Some events exist already, different website', async () => {
+        const firstEvent = {
+          eventTitle: 'team1 - team2',
+          markets: [
+            {
+              website: 'Ladbrokes',
+              team1Name: 'Team1',
+              team1Odds: 1.5,
+              team2Name: 'Team2',
+              team2Odds: 2.5,
+            },
+          ],
+        };
+        await db.collection('Sports').updateOne({ sport: 'soccer' }, { $set: { data: [firstEvent] } });
+        const events = [
+          {
+            website: 'Sportsbet',
+            team1Name: 'Team3',
+            team1Odds: 3.5,
+            team2Name: 'Team4',
+            team2Odds: 4.5,
+          },
+          {
+            website: 'Sportsbet',
+            team1Name: 'Team1',
+            team1Odds: 1.5,
+            team2Name: 'Team2',
+            team2Odds: 2.5,
+          },
+        ];
+        await writeToData(events, db, 'soccer');
+        const response = await db.collection('Sports').findOne({ sport: 'soccer' });
+        expect(response.data.length).toStrictEqual(2);
+        expect(response.data[0].markets.length).toStrictEqual(2);
+        expect(response.data[1].markets.length).toStrictEqual(1);
+      });
+      test('Some events exist already, same website', async () => {
+        const firstEvent = {
+          eventTitle: 'team1 - team2',
+          markets: [
+            {
+              website: 'Ladbrokes',
+              team1Name: 'Team1',
+              team1Odds: 1.5,
+              team2Name: 'Team2',
+              team2Odds: 2.5,
+            },
+          ],
+        };
+        await db.collection('Sports').updateOne({ sport: 'soccer' }, { $set: { data: [firstEvent] } });
+        const events = [
+          {
+            website: 'Ladbrokes',
+            team1Name: 'Team3',
+            team1Odds: 3.5,
+            team2Name: 'Team4',
+            team2Odds: 4.5,
+          },
+          {
+            website: 'Ladbrokes',
+            team1Name: 'Team1',
+            team1Odds: 1.5,
+            team2Name: 'Team2',
+            team2Odds: 2.5,
+          },
+        ];
+        await writeToData(events, db, 'soccer');
+        const response = await db.collection('Sports').findOne({ sport: 'soccer' });
+        expect(response.data.length).toStrictEqual(2);
+        expect(response.data[0].markets.length).toStrictEqual(1);
+        expect(response.data[1].markets.length).toStrictEqual(1);
       });
     });
   });
