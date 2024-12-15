@@ -1,5 +1,3 @@
-import { data } from '../datastore.js';
-
 /**
  * Determines if the event already exists for the given sport
  * @param {String} title title of the event

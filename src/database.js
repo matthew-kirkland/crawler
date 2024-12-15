@@ -21,7 +21,7 @@ export async function close() {
 }
 
 export async function writeToData(events, database, sport) {
-  const sportDocument = await database.collection("Sports").findOne({ sport: sport });
+  const sportDocument = await database.collection('Sports').findOne({ sport: sport });
   const documentEvents = sportDocument.data;
 
   for (const event of events) {
@@ -29,7 +29,8 @@ export async function writeToData(events, database, sport) {
     // add the date here later
     const existingEvent = eventExists(title, documentEvents);
     if (existingEvent != null) {
-      await database.collection("Sports").updateOne(
+      if (existingEvent.markets.some(market => market.website === event.website)) continue;
+      await database.collection('Sports').updateOne(
         { sport: sport, "data.eventTitle": existingEvent.eventTitle },
         { $push: { "data.$.markets": event } }
       );
@@ -38,7 +39,7 @@ export async function writeToData(events, database, sport) {
         eventTitle: title,
         markets: [event],
       };
-      await database.collection("Sports").updateOne(
+      await database.collection('Sports').updateOne(
         { sport: sport },
         { $push: { data: newEvent } }
       );
