@@ -5,8 +5,6 @@ import { connect, close } from './database.js';
 import puppeteer from 'puppeteer';
 
 async function main() {
-  // clear();
-  // load();
   const database = await connect();
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
@@ -19,8 +17,6 @@ async function main() {
   const ladbrokesQueue = new Queue;
 
   ladbrokesQueue.enqueue('https://www.ladbrokes.com.au/sports/soccer/uk-ireland/premier-league');
-  // for testing data persistence the counter exists
-  let counter = 0;
   while (!ladbrokesQueue.isEmpty()) {
     const nextUrl = ladbrokesQueue.dequeue();
     if (visitedLinks.has(nextUrl)) continue;
@@ -30,9 +26,7 @@ async function main() {
     if (ret === null) {
       console.log(`NOT THE RIGHT PAGE FOR MARKETS`);
     }
-    counter++;
   }
-  // save();
   await browser.close();
   await close();
 }
