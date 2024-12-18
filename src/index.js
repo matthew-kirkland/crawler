@@ -1,6 +1,5 @@
 import { ladbrokesScraper } from './scrapers/ladbrokes.js';
 import { Queue } from './utils/Queue.js';
-import { save, load, clear } from './datastore.js';
 import { connect, close } from './database.js';
 import puppeteer from 'puppeteer';
 
