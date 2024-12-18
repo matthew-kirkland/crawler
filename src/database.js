@@ -5,6 +5,10 @@ const uri = 'mongodb+srv://matthewkirkland049:gCX1dcbjuEShs9WH@cluster0.ox2xm.mo
 const client = new MongoClient(uri);
 let db;
 
+/**
+ * Connects to the cloud database
+ * @returns {MongoDB} the newly connected database
+ */
 export async function connect() {
   try {
     await client.connect();
@@ -15,11 +19,20 @@ export async function connect() {
   }
 }
 
+/**
+ * Disconnects from the cloud database
+ */
 export async function close() {
   await client.close();
   console.log("MongoDB connection closed");
 }
 
+/**
+ * Writes the new events to a particular document of the database
+ * @param {Array} events array of new events
+ * @param {MongoDB} database the database to write to
+ * @param {String} sport the sport that the events belong to
+ */
 export async function writeToData(events, database, sport) {
   const sportDocument = await database.collection('Sports').findOne({ sport: sport });
   const documentEvents = sportDocument.data;
