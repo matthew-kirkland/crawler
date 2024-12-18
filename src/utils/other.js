@@ -1,17 +1,12 @@
-import { data } from '../datastore.js';
-
 /**
  * Determines if the event already exists for the given sport
  * @param {String} title title of the event
- * @param {String} sport assumes a valid sport
+ * @param {Array} documentEvents array of already existing events
  * @returns event object if it exists, null otherwise
  */
-export function eventExists(title, sport) {
-  const sportArray = data[sport];
-  if (!sportArray) {
-    sportArray = data['other'];
-  }
-  for (const event of sportArray) {
+export function eventExists(title, documentEvents) {
+  for (const event of documentEvents) {
+    if (!event.eventTitle) continue;
     if (isSubsequenceOf(title, event.eventTitle) || isSubsequenceOf(event.eventTitle, title)) {
       return event;
     }
