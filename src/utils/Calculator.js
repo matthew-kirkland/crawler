@@ -18,7 +18,7 @@ export class Calculator {
       const closestMultiple = Math.ceil(average);
       money1 = Math.min(Math.max(closestMultiple, Math.ceil(lowerBound)), Math.floor(upperBound));
     } else {
-      money1 = null;
+      return null;
     }
     const money2 = total - money1;
     return {
