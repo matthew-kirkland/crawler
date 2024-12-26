@@ -34,7 +34,11 @@ export async function close() {
  * @param {String} sport the sport that the events belong to
  */
 export async function writeToData(events, database, sport) {
-  const sportDocument = await database.collection('Sports').findOne({ sport: sport });
+  let sportDocument = await database.collection('Sports').findOne({ sport: sport });
+  if (sportDocument === null) {
+    const newObj = await database.collection('Sports').insertOne({ sport: sport, data: []});
+    sportDocument = await database.collection('Sports').findOne({ _id: newObj.insertedId });
+  }
   const documentEvents = sportDocument.data;
 
   for (const event of events) {
