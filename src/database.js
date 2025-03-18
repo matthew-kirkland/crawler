@@ -5,6 +5,38 @@ const uri = 'mongodb+srv://matthewkirkland049:gCX1dcbjuEShs9WH@cluster0.ox2xm.mo
 const client = new MongoClient(uri);
 let db;
 
+
+// WRITING TO MONGODB WILL BE FOR THE ODDS DATA
+/** EVENT METADATA STRUCTURE
+ * eventId -> bets
+ * bets will just be:
+[
+  {
+    type: "Full Time",
+    name: "Match",
+    offers: [
+      {
+        bookmaker: "XYZ",
+        bookmakerId: 123,
+        link: "XYZ.com",
+        team1Odds: x,
+        draw: y,
+        team2Odds: z,
+      },
+      {
+        bookmaker: "ABC",
+        bookmakerId: 456
+        link: "ABC.com",
+        team1Odds: a,
+        draw: b,
+        team2Odds: c,
+      },
+    ],
+  },
+  (for now the full time match result will be the only bet)
+]
+ */
+
 /**
  * Connects to the cloud database
  * @returns {MongoDB} the newly connected database
