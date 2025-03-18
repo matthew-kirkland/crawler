@@ -59,8 +59,11 @@ export async function unibetScraper() {
       if (event.event.state == 'STARTED') continue;
       events.push({
         bookmakerId: event.event.id,
-        startTime: 5,
+        startTime: event.event.start,
         sport: sport,
+        league: event.event.group,
+        team1Name: event.event.homeName,
+        team2Name: event.event.team2Name,
       });
     }
   }
@@ -71,10 +74,7 @@ export async function unibetScraper() {
     res = await axios.get(url);
     const offers = res.data.betOffers;
     const resultBet = offers.find(offer => offer.betOfferType.id == 2);
-    if (!resultBet) {
-      console.log(`full time result not found for ${event.bookmakerId} in ${event.sport}`);
-      continue;
-    };
+    if (!resultBet) continue;
     // console.log(`full time result found for event ${event.id} in ${event.sport}`);
 
     if (resultBet.outcomes.length == 2) {
