@@ -5,7 +5,6 @@ const uri = 'mongodb+srv://matthewkirkland049:gCX1dcbjuEShs9WH@cluster0.ox2xm.mo
 const client = new MongoClient(uri);
 let db;
 
-
 // WRITING TO MONGODB WILL BE FOR THE ODDS DATA
 /** EVENT METADATA STRUCTURE
  * eventId -> bets
@@ -38,7 +37,7 @@ let db;
  */
 
 /**
- * Connects to the cloud database
+ * Connects to the MongoDB database
  * @returns {MongoDB} the newly connected database
  */
 export async function connect() {
@@ -52,46 +51,9 @@ export async function connect() {
 }
 
 /**
- * Disconnects from the cloud database
+ * Disconnects from the MongoDB database
  */
 export async function close() {
   await client.close();
   console.log("MongoDB connection closed");
-}
-
-/**
- * Writes the new events to a particular document of the database
- * @param {Array} events array of new events
- * @param {MongoDB} database the database to write to
- * @param {String} sport the sport that the events belong to
- */
-export async function writeToData(events, database, sport) {
-  let sportDocument = await database.collection('Sports').findOne({ sport: sport });
-  if (sportDocument === null) {
-    const newObj = await database.collection('Sports').insertOne({ sport: sport, data: []});
-    sportDocument = await database.collection('Sports').findOne({ _id: newObj.insertedId });
-  }
-  const documentEvents = sportDocument.data;
-
-  for (const event of events) {
-    const title = event.team1Name.toLowerCase() + ' - ' + event.team2Name.toLowerCase();
-    // add the date here later
-    const existingEvent = eventExists(title, documentEvents);
-    if (existingEvent != null) {
-      if (existingEvent.markets.some(market => market.website === event.website)) continue;
-      await database.collection('Sports').updateOne(
-        { sport: sport, "data.eventTitle": existingEvent.eventTitle },
-        { $push: { "data.$.markets": event } }
-      );
-    } else {
-      const newEvent = {
-        eventTitle: title,
-        markets: [event],
-      };
-      await database.collection('Sports').updateOne(
-        { sport: sport },
-        { $push: { data: newEvent } }
-      );
-    }
-  }
 }

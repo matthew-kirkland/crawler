@@ -1,5 +1,5 @@
 // import { Queue } from './utils/Queue.js';
-// import { connect, close } from './database.js';
+import { connect, close } from '../database.js';
 import axios from 'axios';
 
 /**
@@ -98,6 +98,30 @@ export async function unibetScraper() {
       });
     }
   }
+
+  writeToData(events, bets);
+}
+
+async function writeToData(events, bets) {
+  await connect();
+  for (const i in events) {
+    // event matching algorithm for events[i]: outputs the ID of the existing game (if it exists), otherwise output a new ID
+    if (true /* replace this with the outcome of the matching algorithm */) {
+      const event = await database.collection('Sports').findOne({ eventId: id });
+      if (event) {
+        const existingBetIndex = event.bets.findIndex(bet => bet.bookmaker === "Unibet");
+        if (existingBetIndex != -1) {
+          event.bets[existingBetIndex] = bets[i];
+        } else {
+          event.bets.push(bets[i]);
+        }
+        await events.updateOne({ eventId: eventId }, { $set: { bets: event.bets } });
+      }
+    } else {
+      await events.insertOne({ eventId: eventId, bets: [bets[i]] });
+    }
+  }
+  await close();
 }
 
 unibetScraper();

@@ -16,7 +16,7 @@ async function main() {
    * each one locally connects and writes to the database (already atomic)
    */
   
-  // re-run every hour - gather new games, ignore existing games, remove expired games
+  // re-run every hour - gather new games, remove expired games
   
   ladbrokesQueue.enqueue('https://www.ladbrokes.com.au/sports/soccer/uk-ireland/premier-league');
   while (!ladbrokesQueue.isEmpty()) {
