@@ -1,3 +1,11 @@
+import Fuse from 'fuse.js';
+
+const options = {
+  includeScore: true,   // Include the match score in the results
+  threshold: 0.4,       // Lower threshold = stricter matching (0.0 to 1.0)
+  keys: ["teamName"]    // Which property to search in the objects
+};
+
 /**
  * Determines if the event already exists for the given sport
  * @param {String} title title of the event
@@ -5,13 +13,7 @@
  * @returns event object if it exists, null otherwise
  */
 export function eventExists(title, documentEvents) {
-  for (const event of documentEvents) {
-    if (!event.eventTitle) continue;
-    if (isSubsequenceOf(title, event.eventTitle) || isSubsequenceOf(event.eventTitle, title)) {
-      return event;
-    }
-  }
-  return null;
+  
 }
 
 /**
