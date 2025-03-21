@@ -1,5 +1,6 @@
 import { MongoClient } from 'mongodb';
 import { eventExists } from './utils/other.js';
+import Fuse from 'fuse.js';
 
 const uri = 'mongodb+srv://matthewkirkland049:gCX1dcbjuEShs9WH@cluster0.ox2xm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 const client = new MongoClient(uri);
@@ -57,3 +58,30 @@ export async function close() {
   await client.close();
   console.log("MongoDB connection closed");
 }
+
+export async function eventExists(thisEvent) {
+  const events = await db.collection('Sports').find({ });
+  for (const event of events) {
+    if (eventsMatch(event, thisEvent)) {
+      return event;
+    }
+  }
+  return null;
+}
+
+function eventsMatch(event1, event2) {
+  if (event1.startTime.getTime() != event2.startTime.getTime()) return false;
+
+  const team1Match = fuzzyMatch(event1.team1Name, event2.team1Name);
+  const team2Match = fuzzyMatch(event1.team2Name, event2.team2Name);
+  const leagueMatch = fuzzyMatch(event1.league, event2.league);
+  return team1Match && team2Match && leagueMatch;
+}
+
+function fuzzyMatch(str1, str2) {
+  const fuse = new Fuse([str2], { includeScore: true, threshold: 0.8 });
+  const result = fuse.search(str1);
+  return result.length > 0;
+}
+
+export { db }
