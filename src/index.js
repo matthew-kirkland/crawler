@@ -2,6 +2,9 @@
 import { unibetScraper } from './scrapers/unibet.js';
 import { connect, close, clearDb } from './database.js';
 
+/**
+ * The starting point for all scrapers
+ */
 async function main() {
   await connect();
   await clearDb();
@@ -17,12 +20,9 @@ async function main() {
   await unibetScraper();
   console.log('Finished sraping Unibet');
 
-  setInterval(() => {
-    console.log("Active handles:", process._getActiveHandles());
-    console.log("Active requests:", process._getActiveRequests());
-  }, 2000);
-
   await close();
+
+  process.exit(0);
 }
 
 main();

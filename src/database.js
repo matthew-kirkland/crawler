@@ -6,37 +6,6 @@ const client = new MongoClient(uri);
 let db;
 const clients = [];
 
-// WRITING TO MONGODB WILL BE FOR THE ODDS DATA
-/** EVENT METADATA STRUCTURE
- * eventId -> bets
- * bets will just be:
-[
-  {
-    type: "Full Time",
-    name: "Match",
-    offers: [
-      {
-        bookmaker: "XYZ",
-        bookmakerId: 123,
-        link: "XYZ.com",
-        team1Odds: x,
-        draw: y,
-        team2Odds: z,
-      },
-      {
-        bookmaker: "ABC",
-        bookmakerId: 456
-        link: "ABC.com",
-        team1Odds: a,
-        draw: b,
-        team2Odds: c,
-      },
-    ],
-  },
-  (for now the full time match result will be the only bet)
-]
- */
-
 /**
  * Connects to the MongoDB database
  * @returns {MongoDB} the newly connected database
@@ -61,10 +30,18 @@ export async function close() {
   console.log('MongoDB connection closed');
 }
 
+/**
+ * Clears the MongoDB database
+ */
 export async function clearDb() {
   await db.collection('Sports').deleteMany({ });
 }
 
+/**
+ * Determines if an event already exists in the database
+ * @param {object} thisEvent the event to inspect
+ * @returns {} the existing event, if it is in the database, otherwise null
+ */
 export async function eventExists(thisEvent) {
   const events = await db.collection('Sports').find({ }).toArray();
   for (const event of events) {
@@ -75,6 +52,12 @@ export async function eventExists(thisEvent) {
   return null;
 }
 
+/**
+ * Determines if two events are the same based on their factors
+ * @param {object} event1
+ * @param {object} event2
+ * @returns {boolean} true if the two events are deemed to be the same, false otherwise
+ */
 function eventsMatch(event1, event2) {
   if (event1.startTime.getTime() != event2.startTime.getTime()) return false;
 
@@ -84,6 +67,12 @@ function eventsMatch(event1, event2) {
   return team1Match && team2Match && leagueMatch;
 }
 
+/**
+ * Determines string similarity
+ * @param {string} str1
+ * @param {string} str2
+ * @returns {boolean} true if two strings are 80% similar, false otherwise
+ */
 function fuzzyMatch(str1, str2) {
   if (str1 == null || str2 == null) {
     console.log(`either ${str1} or ${str2} was null`);
@@ -94,4 +83,4 @@ function fuzzyMatch(str1, str2) {
   return result.length > 0;
 }
 
-export { db }
+export { db, clients }
