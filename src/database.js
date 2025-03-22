@@ -1,10 +1,10 @@
 import { MongoClient } from 'mongodb';
-import { eventExists } from './utils/other.js';
 import Fuse from 'fuse.js';
 
 const uri = 'mongodb+srv://matthewkirkland049:gCX1dcbjuEShs9WH@cluster0.ox2xm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 const client = new MongoClient(uri);
 let db;
+const clients = [];
 
 // WRITING TO MONGODB WILL BE FOR THE ODDS DATA
 /** EVENT METADATA STRUCTURE
@@ -44,7 +44,9 @@ let db;
 export async function connect() {
   try {
     await client.connect();
+    clients.push(client);
     db = client.db('Odds-Data');
+    console.log('MongoDB connection established')
     return db;
   } catch (error) {
     console.log(error);
@@ -56,11 +58,15 @@ export async function connect() {
  */
 export async function close() {
   await client.close();
-  console.log("MongoDB connection closed");
+  console.log('MongoDB connection closed');
+}
+
+export async function clearDb() {
+  await db.collection('Sports').deleteMany({ });
 }
 
 export async function eventExists(thisEvent) {
-  const events = await db.collection('Sports').find({ });
+  const events = await db.collection('Sports').find({ }).toArray();
   for (const event of events) {
     if (eventsMatch(event, thisEvent)) {
       return event;
@@ -79,7 +85,11 @@ function eventsMatch(event1, event2) {
 }
 
 function fuzzyMatch(str1, str2) {
-  const fuse = new Fuse([str2], { includeScore: true, threshold: 0.8 });
+  if (str1 == null || str2 == null) {
+    console.log(`either ${str1} or ${str2} was null`);
+    return false;
+  }
+  const fuse = new Fuse([{ text: str2 }], { keys: ["text"], includeScore: true, threshold: 0.8 });
   const result = fuse.search(str1);
   return result.length > 0;
 }
