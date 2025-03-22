@@ -24,42 +24,42 @@ import axios from 'axios';
 
 const sports = [
   'american_football',
-  'australian_rules',
-  'baseball',
-  'basketball', // some basketball has no match result (NCAAW)
-  'bowling',
-  'boxing',
-  'cricket',
-  'curling',
-  // 'cycling', select the singular winner
-  'darts',
-  'esports',
-  'floorball',
-  'football',
-  // 'formula_1', select the singular winner
-  'gaelic_sports',
-  // 'golf', select the singular winner
-  'handball',
-  'ice_hockey',
-  // 'lacrosse', select winner of the league
-  // 'motorsports', select the singular winner
-  // 'netball', pretty much no markets
-  'rugby_league',
-  'rugby_union',
-  'snooker',
-  'softball',
-  'surfing',
-  'table_tennis',
-  // 'trotting', pretty much no markets
-  'ufc_mma',
-  'volleyball',
-  'water_polo'
+  // 'australian_rules',
+  // 'baseball',
+  // 'basketball', // some basketball has no match result (NCAAW)
+  // 'bowling',
+  // 'boxing',
+  // 'cricket',
+  // 'curling',
+  // // 'cycling', select the singular winner
+  // 'darts',
+  // 'esports',
+  // 'floorball',
+  // 'football',
+  // // 'formula_1', select the singular winner
+  // 'gaelic_sports',
+  // // 'golf', select the singular winner
+  // 'handball',
+  // 'ice_hockey',
+  // // 'lacrosse', select winner of the league
+  // // 'motorsports', select the singular winner
+  // // 'netball', pretty much no markets
+  // 'rugby_league',
+  // 'rugby_union',
+  // 'snooker',
+  // 'softball',
+  // 'surfing',
+  // 'table_tennis',
+  // // 'trotting', pretty much no markets
+  // 'ufc_mma',
+  // 'volleyball',
+  // 'water_polo'
 ];
 
 /**
  * Main scraping function for the Unibet bookmaker
  */
-export async function unibetScraper() {  
+export async function unibetEUScraper() {  
   const events = [];
   const bets = [];
   let url, res;
@@ -80,7 +80,7 @@ export async function unibetScraper() {
 
         if (resultBet.outcomes.length == 2) {
           bets.push({
-            bookmaker: 'Unibet',
+            bookmaker: 'Unibet EU',
             bookmakerId: event.event.id,
             link: `https://www.unibet.com/betting/sports/event/${event.event.id}`,
             team1Odds: resultBet.outcomes[0].odds / 1000,
@@ -88,7 +88,7 @@ export async function unibetScraper() {
           });
         } else {
           bets.push({
-            bookmaker: 'Unibet',
+            bookmaker: 'Unibet EU',
             bookmakerId: event.event.id,
             link: `https://www.unibet.com/betting/sports/event/${event.event.id}`,
             team1Odds: resultBet.outcomes[0].odds / 1000,
@@ -125,7 +125,7 @@ async function writeToData(events, bets) {
   for (const i in events) {
     const existingEvent = await eventExists(events[i]);
     if (existingEvent != null) {
-      const existingBetIndex = existingEvent.betOffers.findIndex(bet => bet.bookmaker === 'Unibet');
+      const existingBetIndex = existingEvent.betOffers.findIndex(bet => bet.bookmaker === 'Unibet EU');
       if (existingBetIndex != -1) {
         existingEvent.betOffers[existingBetIndex] = bets[i]; // update existing bet offer if the bookmaker was there before
         eventId = existingEvent.eventId;
@@ -133,7 +133,8 @@ async function writeToData(events, bets) {
         existingEvent.betOffers.push(bets[i]); // otherwise add the new bet
         eventId = existingEvent.eventId;
       }
-      await db.collection('Sports').updateOne({ eventId: eventId }, { $set: { bets: existingEvent.betOffers } });    } else {
+      await db.collection('Sports').updateOne({ eventId: eventId }, { $set: { bets: existingEvent.betOffers } });
+    } else {
       events[i].betOffers[0] = bets[i];
       eventId = events[i].startTime.toISOString().substring(0, 10) + '-' + events[i].league + '-' + events[i].team1Name + '-' + events[i].team2Name;
       events[i].eventId = eventId;

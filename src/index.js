@@ -1,5 +1,5 @@
 // import { ladbrokesScraper } from './scrapers/ladbrokes.js';
-import { unibetScraper } from './scrapers/unibet.js';
+import { unibetEUScraper } from './scrapers/unibet_EU.js';
 import { connect, close, clearDb } from './database.js';
 
 /**
@@ -15,9 +15,17 @@ async function main() {
    * unibetScraper()
    * ...
    * each one locally writes to the database (already atomic)
+   * 
+   * bookmakers to consider:
+   * - betfair sportsbook
+   * - ladbrokes
+   * - sportsbet
+   * - coral
+   * - TAB
+   * - neds
    */
   // re-run every hour - gather new games, remove expired games
-  await unibetScraper();
+  await unibetEUScraper();
   console.log('Finished sraping Unibet');
 
   await close();
