@@ -1,13 +1,14 @@
 // import { ladbrokesScraper } from './scrapers/ladbrokes.js';
 import { unibetEUScraper } from './scrapers/unibet_EU.js';
-import { connect, close, clearDb } from './database.js';
+import { connect, close, clearDb, db } from './database.js';
+import { findArbitrageEvents, printSplits } from './utils/arbitrage.js';
 
 /**
  * The starting point for all scrapers
  */
 async function main() {
   await connect();
-  await clearDb();
+  // await clearDb();
   // split into one thread per bookmaker, keep queues in each thread
   /** e.g
    * ladbrokesScraper()
@@ -21,12 +22,32 @@ async function main() {
    * - ladbrokes
    * - sportsbet
    * - coral
-   * - TAB
+   * - pointsbet
    * - neds
    */
   // re-run every hour - gather new games, remove expired games
   await unibetEUScraper();
   console.log('Finished sraping Unibet');
+
+  db.collection('Sports').insertOne({
+    eventId: 'thisEventIsGood!!!!',
+    startTime: new Date(),
+    sport: 'Soccer',
+    league: 'EPL',
+    team1Name: 'Matthew',
+    team2Name: 'Lingge',
+    betOffers: [
+      {
+        bookmaker: 'Ladbrokes',
+        bookmakerId: '123',
+        link: 'dummyLink',
+        team1Odds: 2.6,
+        team2Odds: 4.6,
+      }
+    ],
+  });
+  const arbEvents = await findArbitrageEvents();
+  printSplits(arbEvents);
 
   await close();
 

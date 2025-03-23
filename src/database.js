@@ -78,7 +78,7 @@ function fuzzyMatch(str1, str2) {
     console.log(`either ${str1} or ${str2} was null`);
     return false;
   }
-  const fuse = new Fuse([{ text: str2 }], { keys: ["text"], includeScore: true, threshold: 0.8 });
+  const fuse = new Fuse([{ text: str2 }], { keys: ["text"], includeScore: true, threshold: 0.9 });
   const result = fuse.search(str1);
   return result.length > 0;
 }

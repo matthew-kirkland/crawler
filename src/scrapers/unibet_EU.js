@@ -125,15 +125,14 @@ async function writeToData(events, bets) {
   for (const i in events) {
     const existingEvent = await eventExists(events[i]);
     if (existingEvent != null) {
-      const existingBetIndex = existingEvent.betOffers.findIndex(bet => bet.bookmaker === 'Unibet EU');
+      const existingBetIndex = existingEvent.betOffers.findIndex(bet => bet.bookmaker === 'Unibet');
       if (existingBetIndex != -1) {
         existingEvent.betOffers[existingBetIndex] = bets[i]; // update existing bet offer if the bookmaker was there before
-        eventId = existingEvent.eventId;
       } else {
         existingEvent.betOffers.push(bets[i]); // otherwise add the new bet
-        eventId = existingEvent.eventId;
       }
-      await db.collection('Sports').updateOne({ eventId: eventId }, { $set: { bets: existingEvent.betOffers } });
+      eventId = existingEvent.eventId;
+      await db.collection('Sports').updateOne({ eventId: eventId }, { $set: { betOffers: existingEvent.betOffers } });
     } else {
       events[i].betOffers[0] = bets[i];
       eventId = events[i].startTime.toISOString().substring(0, 10) + '-' + events[i].league + '-' + events[i].team1Name + '-' + events[i].team2Name;
