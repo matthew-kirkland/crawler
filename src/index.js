@@ -28,8 +28,8 @@ async function main() {
    * - tabtouch
    */
   // re-run every hour - gather new games, remove expired games
-  await unibetEUScraper();
-  console.log('Finished sraping Unibet');
+  // await unibetEUScraper();
+  // console.log('Finished sraping Unibet');
 
   db.collection('Sports').insertOne({
     eventId: 'thisEventIsGood!!!!',
@@ -43,8 +43,9 @@ async function main() {
         bookmaker: 'Ladbrokes',
         bookmakerId: '123',
         link: 'dummyLink',
-        team1Odds: 2.6,
-        team2Odds: 4.6,
+        team1Odds: 2,
+        team2Odds: 3,
+        drawOdds: 6.5,
       }
     ],
   });

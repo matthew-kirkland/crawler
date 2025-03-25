@@ -1,6 +1,8 @@
 import { Calculator } from './Calculator.js';
 import { db } from '../database.js';
 
+const defaultTotal = 100;
+
 export async function findArbitrageEvents() {
   const events = await db.collection('Sports').find({ }).toArray();
   const arbitrageEvents = [];
@@ -10,14 +12,14 @@ export async function findArbitrageEvents() {
     maxInfo = {
       eventId: '',
       team1Odds: 0,
-      drawOdds: 0,
       team2Odds: 0,
+      drawOdds: 0,
       team1Bookmaker: '',
       team1Link: '',
-      drawBookmaker: '',
-      drawLink: '',
       team2Bookmaker: '',
       team2Link: '',
+      drawBookmaker: '',
+      drawLink: '',
     }
     maxInfo.eventId = event.eventId;
     for (const offer of event.betOffers) {
@@ -41,7 +43,7 @@ export async function findArbitrageEvents() {
     }
 
     if (event.betOffers[0].drawOdds) {
-      if (Calculator.hasArb_3bet(maxInfo.team1Odds, maxInfo.drawOdds, maxInfo.team2Odds)) {
+      if (Calculator.hasArb_3bet(maxInfo.team1Odds, maxInfo.team2Odds, maxInfo.drawOdds)) {
         arbitrageEvents.push(maxInfo);
       }
     } else {
@@ -53,19 +55,24 @@ export async function findArbitrageEvents() {
   return arbitrageEvents;
 }
 
-export async function printSplits(arbitrageEvents) {
+export function printSplits(arbitrageEvents) {
   for (const event of arbitrageEvents) {
     let moneySplit;
     if (event.drawOdds) {
-      moneySplit = Calculator.splitMoney_3bet(100, event.team1Odds, event.team2Odds, event.drawOdds);
+      moneySplit = Calculator.splitMoney_3bet(defaultTotal, event.team1Odds, event.team2Odds, event.drawOdds);
     } else {
-      moneySplit = Calculator.splitMoney_2bet(100, event.team1Odds, event.team2Odds);
+      moneySplit = Calculator.splitMoney_2bet(defaultTotal, event.team1Odds, event.team2Odds);
     }
+    if (!moneySplit) {
+      console.log(`No valid split for event ${event.eventId}`);
+      return;
+    }
+    
     console.log(`\nEvent: ${event.eventId}`);
     if (event.drawOdds) {
-      console.log(`Expected profit: ${100 * Calculator.expectedProfit_3bet(event.team1Odds, event.team2Odds, event.drawOdds)}`);
+      console.log(`Expected profit: ${defaultTotal * Calculator.expectedProfit_3bet(event.team1Odds, event.team2Odds, event.drawOdds)}`);
     } else {
-      console.log(`Expected profit: ${100 * Calculator.expectedProfit_2bet(event.team1Odds, event.team2Odds)}`);
+      console.log(`Expected profit: ${defaultTotal * Calculator.expectedProfit_2bet(event.team1Odds, event.team2Odds)}`);
     }
     console.log(`Team 1: ${event.team1Bookmaker}, access at ${event.team1Link} for odds of ${event.team1Odds}`);
     console.log(`Should place ${moneySplit.money1} into this team\n`);
