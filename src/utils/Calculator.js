@@ -35,7 +35,7 @@ export class Calculator {
     if (money1 == null) return null;
 
     const lowerBound_2 = total / odds2;
-    const upperBound_2 = total - (total / odds3) / money1;
+    const upperBound_2 = total - (total / odds3) - money1;
     const money2 = this.findOptVal(lowerBound_2, upperBound_2);
     if (money2 == null) return null;
 
@@ -58,6 +58,8 @@ export class Calculator {
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
   static findOptVal(lowerBound, upperBound) {
+    if (lowerBound == upperBound) return lowerBound;
+    
     const average = (upperBound + lowerBound) / 2;
     let value, closestMultiple;
     if (upperBound - lowerBound >= 10) {
