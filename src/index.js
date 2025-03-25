@@ -8,7 +8,7 @@ import { findArbitrageEvents, printSplits } from './utils/arbitrage.js';
  */
 async function main() {
   await connect();
-  // await clearDb();
+  await clearDb();
   // split into one thread per bookmaker, keep queues in each thread
   /** e.g
    * ladbrokesScraper()
@@ -24,6 +24,8 @@ async function main() {
    * - coral
    * - pointsbet
    * - neds
+   * - TAB
+   * - tabtouch
    */
   // re-run every hour - gather new games, remove expired games
   await unibetEUScraper();

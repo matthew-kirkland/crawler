@@ -21,6 +21,7 @@ import axios from 'axios';
  *    betOffers: [],
  * }
  */
+const bookmakerString = 'Unibet EU';
 
 const sports = [
   'american_football',
@@ -80,7 +81,7 @@ export async function unibetEUScraper() {
 
         if (resultBet.outcomes.length == 2) {
           bets.push({
-            bookmaker: 'Unibet EU',
+            bookmaker: bookmakerString,
             bookmakerId: event.event.id,
             link: `https://www.unibet.com/betting/sports/event/${event.event.id}`,
             team1Odds: resultBet.outcomes[0].odds / 1000,
@@ -88,7 +89,7 @@ export async function unibetEUScraper() {
           });
         } else {
           bets.push({
-            bookmaker: 'Unibet EU',
+            bookmaker: bookmakerString,
             bookmakerId: event.event.id,
             link: `https://www.unibet.com/betting/sports/event/${event.event.id}`,
             team1Odds: resultBet.outcomes[0].odds / 1000,
@@ -125,7 +126,7 @@ async function writeToData(events, bets) {
   for (const i in events) {
     const existingEvent = await eventExists(events[i]);
     if (existingEvent != null) {
-      const existingBetIndex = existingEvent.betOffers.findIndex(bet => bet.bookmaker === 'Unibet');
+      const existingBetIndex = existingEvent.betOffers.findIndex(bet => bet.bookmaker === bookmakerString);
       if (existingBetIndex != -1) {
         existingEvent.betOffers[existingBetIndex] = bets[i]; // update existing bet offer if the bookmaker was there before
       } else {
