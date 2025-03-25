@@ -93,8 +93,8 @@ export async function unibetEUScraper() {
             bookmakerId: event.event.id,
             link: `https://www.unibet.com/betting/sports/event/${event.event.id}`,
             team1Odds: resultBet.outcomes[0].odds / 1000,
-            drawOdds: resultBet.outcomes[1].odds / 1000,
             team2Odds: resultBet.outcomes[2].odds / 1000,
+            drawOdds: resultBet.outcomes[1].odds / 1000,
           });
         }
         events.push({

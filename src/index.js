@@ -28,8 +28,8 @@ async function main() {
    * - tabtouch
    */
   // re-run every hour - gather new games, remove expired games
-  // await unibetEUScraper();
-  // console.log('Finished sraping Unibet');
+  await unibetEUScraper();
+  console.log('Finished sraping Unibet');
 
   db.collection('Sports').insertOne({
     eventId: 'thisEventIsGood!!!!',
