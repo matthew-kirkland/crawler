@@ -1,6 +1,6 @@
 // import { ladbrokesScraper } from './scrapers/ladbrokes.js';
 import { unibetEUScraper } from './scrapers/unibet_EU.js';
-import { connect, close, clearDb, db } from './database.js';
+import { connect, close, clearDb, db, clearOldEvents } from './database.js';
 import { findArbitrageEvents, printSplits } from './utils/arbitrage.js';
 
 /**
@@ -9,6 +9,7 @@ import { findArbitrageEvents, printSplits } from './utils/arbitrage.js';
 async function main() {
   await connect();
   await clearDb();
+  await clearOldEvents();
   // split into one thread per bookmaker, keep queues in each thread
   /** e.g
    * ladbrokesScraper()

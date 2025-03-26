@@ -38,6 +38,14 @@ export async function clearDb() {
 }
 
 /**
+ * Removes expired events from the database
+ */
+export async function clearOldEvents() {
+  const timeNow = new Date();
+  await db.collection('Sports').deleteMany({ startTime: { $lt: timeNow } });
+}
+
+/**
  * Determines if an event already exists in the database
  * @param {object} thisEvent the event to inspect
  * @returns {} the existing event, if it is in the database, otherwise null
