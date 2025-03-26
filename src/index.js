@@ -31,24 +31,24 @@ async function main() {
   await unibetEUScraper();
   console.log('Finished sraping Unibet');
 
-  db.collection('Sports').insertOne({
-    eventId: 'thisEventIsGood!!!!',
-    startTime: new Date(),
-    sport: 'Soccer',
-    league: 'EPL',
-    team1Name: 'Matthew',
-    team2Name: 'Lingge',
-    betOffers: [
-      {
-        bookmaker: 'Ladbrokes',
-        bookmakerId: '123',
-        link: 'dummyLink',
-        team1Odds: 2,
-        team2Odds: 3,
-        drawOdds: 6.5,
-      }
-    ],
-  });
+  // db.collection('Sports').insertOne({
+  //   eventId: 'thisEventIsGood!!!!',
+  //   startTime: new Date(),
+  //   sport: 'Soccer',
+  //   league: 'EPL',
+  //   team1Name: 'Matthew',
+  //   team2Name: 'Lingge',
+  //   betOffers: [
+  //     {
+  //       bookmaker: 'Ladbrokes',
+  //       bookmakerId: '123',
+  //       link: 'dummyLink',
+  //       team1Odds: 2,
+  //       team2Odds: 3,
+  //       drawOdds: 10,
+  //     }
+  //   ],
+  // });
   const arbEvents = await findArbitrageEvents();
   printSplits(arbEvents);
 

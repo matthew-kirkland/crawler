@@ -25,36 +25,36 @@ const bookmakerString = 'Unibet EU';
 
 const sports = [
   'american_football',
-  // 'australian_rules',
-  // 'baseball',
-  // 'basketball', // some basketball has no match result (NCAAW)
-  // 'bowling',
-  // 'boxing',
-  // 'cricket',
-  // 'curling',
-  // // 'cycling', select the singular winner
-  // 'darts',
-  // 'esports',
-  // 'floorball',
-  // 'football',
-  // // 'formula_1', select the singular winner
-  // 'gaelic_sports',
-  // // 'golf', select the singular winner
-  // 'handball',
-  // 'ice_hockey',
-  // // 'lacrosse', select winner of the league
-  // // 'motorsports', select the singular winner
-  // // 'netball', pretty much no markets
-  // 'rugby_league',
-  // 'rugby_union',
-  // 'snooker',
-  // 'softball',
-  // 'surfing',
-  // 'table_tennis',
-  // // 'trotting', pretty much no markets
-  // 'ufc_mma',
-  // 'volleyball',
-  // 'water_polo'
+  'australian_rules',
+  'baseball',
+  'basketball', // some basketball has no match result (NCAAW)
+  'bowling',
+  'boxing',
+  'cricket',
+  'curling',
+  // 'cycling', select the singular winner
+  'darts',
+  'esports',
+  'floorball',
+  'football',
+  // 'formula_1', select the singular winner
+  'gaelic_sports',
+  // 'golf', select the singular winner
+  'handball',
+  'ice_hockey',
+  // 'lacrosse', select winner of the league
+  // 'motorsports', select the singular winner
+  // 'netball', pretty much no markets
+  'rugby_league',
+  'rugby_union',
+  'snooker',
+  'softball',
+  'surfing',
+  'table_tennis',
+  // 'trotting', pretty much no markets
+  'ufc_mma',
+  'volleyball',
+  'water_polo'
 ];
 
 /**

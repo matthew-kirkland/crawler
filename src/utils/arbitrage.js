@@ -3,6 +3,10 @@ import { db } from '../database.js';
 
 const defaultTotal = 100;
 
+/**
+ * Searches the database for arbitrage events
+ * @returns {array} set of events with arbitrage opportunities
+ */
 export async function findArbitrageEvents() {
   const events = await db.collection('Sports').find({ }).toArray();
   const arbitrageEvents = [];
@@ -55,6 +59,11 @@ export async function findArbitrageEvents() {
   return arbitrageEvents;
 }
 
+/**
+ * Prints out the events and how money should be split between them
+ * @param {array} arbitrageEvents set of events with arbitrage opportunities
+ * @returns
+ */
 export function printSplits(arbitrageEvents) {
   for (const event of arbitrageEvents) {
     let moneySplit;
@@ -70,9 +79,9 @@ export function printSplits(arbitrageEvents) {
     
     console.log(`\nEvent: ${event.eventId}`);
     if (event.drawOdds) {
-      console.log(`Expected profit: ${defaultTotal * Calculator.expectedProfit_3bet(event.team1Odds, event.team2Odds, event.drawOdds)}`);
+      console.log(`Expected profit: ${(100 * Calculator.expectedProfit_3bet(event.team1Odds, event.team2Odds, event.drawOdds)).toFixed(2)}%`);
     } else {
-      console.log(`Expected profit: ${defaultTotal * Calculator.expectedProfit_2bet(event.team1Odds, event.team2Odds)}`);
+      console.log(`Expected profit: ${(100 * Calculator.expectedProfit_2bet(event.team1Odds, event.team2Odds)).toFixed(2)}%`);
     }
     console.log(`Team 1: ${event.team1Bookmaker}, access at ${event.team1Link} for odds of ${event.team1Odds}`);
     console.log(`Should place ${moneySplit.money1} into this team\n`);
@@ -82,8 +91,6 @@ export function printSplits(arbitrageEvents) {
       console.log(`Draw: ${event.drawBookmaker}, access at ${event.drawLink} for odds of ${event.drawOdds}`);
       console.log(`Should place ${moneySplit.money3} into this team\n`);
     }
-    console.log('\n');
     console.log('==============================================================================');
-    console.log('\n');
   }
 }
