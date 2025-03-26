@@ -1,4 +1,4 @@
-import { db } from 'mongodb';
+import { db, eventExists } from '../database.js';
 import axios from 'axios';
 
 /**
@@ -21,6 +21,7 @@ import axios from 'axios';
  *    betOffers: [],
  * }
  */
+const bookmakerString = 'Unibet EU';
 
 const sports = [
   'american_football',
@@ -56,8 +57,12 @@ const sports = [
   'water_polo'
 ];
 
-export async function unibetScraper() {  
+/**
+ * Main scraping function for the Unibet bookmaker
+ */
+export async function unibetEUScraper() {  
   const events = [];
+  const bets = [];
   let url, res;
   for (const sport of sports) {
     url = `https://eu-offering-api.kambicdn.com/offering/v2018/ubca/listView/${sport}.json?lang=en_GB&market=ZZ&client_id=2&channel_id=1`;
@@ -66,64 +71,73 @@ export async function unibetScraper() {
     for (const event of res.data.events) {
       if (event.event.state == 'STARTED') continue;
 
-      url = `https://eu-offering-api.kambicdn.com/offering/v2018/ubca/betoffer/event/${event.id}.json?lang=en_GB&market=ZZ&client_id=2&channel_id=1&includeParticipants=true`;
-      res = await axios.get(url);
-      const offers = res.data.betOffers;
-      const resultBet = offers.find(offer => offer.betOfferType.id == 2);
-      if (!resultBet) continue;
-      // console.log(`full time result found for event ${event.id} in ${event.sport}`);
+      try {
+        url = `https://eu-offering-api.kambicdn.com/offering/v2018/ubca/betoffer/event/${event.event.id}.json?lang=en_GB&market=ZZ&client_id=2&channel_id=1&includeParticipants=true`;
+        res = await axios.get(url);
+        if (res.status != 200) continue;
+        const offers = res.data.betOffers;
+        const resultBet = offers.find(offer => offer.betOfferType.id == 2);
+        if (!resultBet) continue;
 
-      const bets = [];
-      if (resultBet.outcomes.length == 2) {
-        bets.push({
-          bookmaker: 'Unibet',
-          bookmakerId: event.bookmakerId,
-          link: `https://www.unibet.com/betting/sports/event/${event.bookmakerId}`,
-          team1Odds: resultBet.outcomes[0].odds / 1000,
-          team2Odds: resultBet.outcomes[1].odds / 1000,
+        if (resultBet.outcomes.length == 2) {
+          bets.push({
+            bookmaker: bookmakerString,
+            bookmakerId: event.event.id,
+            link: `https://www.unibet.com/betting/sports/event/${event.event.id}`,
+            team1Odds: resultBet.outcomes[0].odds / 1000,
+            team2Odds: resultBet.outcomes[1].odds / 1000,
+          });
+        } else {
+          bets.push({
+            bookmaker: bookmakerString,
+            bookmakerId: event.event.id,
+            link: `https://www.unibet.com/betting/sports/event/${event.event.id}`,
+            team1Odds: resultBet.outcomes[0].odds / 1000,
+            team2Odds: resultBet.outcomes[2].odds / 1000,
+            drawOdds: resultBet.outcomes[1].odds / 1000,
+          });
+        }
+        events.push({
+          eventId: 0,
+          startTime: new Date(event.event.start),
+          sport: sport,
+          league: event.event.group,
+          team1Name: event.event.homeName,
+          team2Name: event.event.awayName,
+          betOffers: [],
         });
-      } else {
-        bets.push({
-          bookmaker: 'Unibet',
-          bookmakerId: event.bookmakerId,
-          link: `https://www.unibet.com/betting/sports/event/${event.bookmakerId}`,
-          team1Odds: resultBet.outcomes[0].odds / 1000,
-          drawOdds: resultBet.outcomes[1].odds / 1000,
-          team2Odds: resultBet.outcomes[2].odds / 1000,
-        });
+      } catch {
+        console.log(`Error gathering event data for ${event.event.id} in ${sport}`);
       }
-      events.push({
-        eventId: 0,
-        startTime: new Date(event.event.start),
-        sport: sport,
-        league: event.event.group,
-        team1Name: event.event.homeName,
-        team2Name: event.event.team2Name,
-        betOffers: [],
-      });
     }
   }
 
-  writeToData(events, bets);
+  await writeToData(events, bets);
 }
 
+/**
+ * Writes the newly collected set of events and bet offers to the database
+ * @param {Array} events 
+ * @param {Array} bets 
+ */
 async function writeToData(events, bets) {
   let eventId;
 
   for (const i in events) {
-    const existingEvent = eventExists(events[i]);
-    if (existingEvent) {
-      const existingBetIndex = existingEvent.betOffers.findIndex(bet => bet.bookmaker === "Unibet");
+    const existingEvent = await eventExists(events[i]);
+    if (existingEvent != null) {
+      const existingBetIndex = existingEvent.betOffers.findIndex(bet => bet.bookmaker === bookmakerString);
       if (existingBetIndex != -1) {
         existingEvent.betOffers[existingBetIndex] = bets[i]; // update existing bet offer if the bookmaker was there before
-        eventId = existingEvent.eventId;
       } else {
         existingEvent.betOffers.push(bets[i]); // otherwise add the new bet
-        eventId = events[i].startTime.toString().substring(0, 11) + '-' + events[i].league + '-' + events[i].team1Name + '-' + events[i].team2Name;
       }
-      await db.collection('Sports').updateOne({ eventId: eventId }, { $set: { bets: existingEvent.betOffers } });
+      eventId = existingEvent.eventId;
+      await db.collection('Sports').updateOne({ eventId: eventId }, { $set: { betOffers: existingEvent.betOffers } });
     } else {
       events[i].betOffers[0] = bets[i];
+      eventId = events[i].startTime.toISOString().substring(0, 10) + '-' + events[i].league + '-' + events[i].team1Name + '-' + events[i].team2Name;
+      events[i].eventId = eventId;
       await db.collection('Sports').insertOne(events[i]);
     }
   }
