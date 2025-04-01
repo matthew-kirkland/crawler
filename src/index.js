@@ -32,7 +32,7 @@ async function main() {
    */
   // re-run every hour - gather new games, remove expired games
   await unibetEUScraper();
-  console.log('Finished sraping Unibet EU');
+  console.log('Finished scraping Unibet EU');
   await TABtouchScraper();
   console.log('Finished sraping TABtouch');
   await unibetAUScraper();
