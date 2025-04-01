@@ -3,7 +3,7 @@ import { unibetEUScraper } from './scrapers/unibet_EU.js';
 import { TABtouchScraper } from './scrapers/TABtouch.js';
 import { unibetAUScraper } from './scrapers/unibet_AU.js';
 import { connect, close, clearDb, db, clearOldEvents } from './database.js';
-import { findArbitrageEvents, printSplits } from './utils/arbitrage.js';
+import { findArbitrageEvents } from './utils/arbitrage.js';
 
 /**
  * The starting point for all scrapers
@@ -47,20 +47,18 @@ async function main() {
   //   team2Name: 'Lingge',
   //   betOffers: [
   //     {
-  //       bookmaker: 'Ladbrokes',
+  //       bookmaker: 'dummyBookmaker',
   //       bookmakerId: '123',
-  //       link: 'dummyLink',
+  //       link: 'https://www.wikipedia.org/',
   //       team1Odds: 2,
   //       team2Odds: 3,
   //       drawOdds: 10,
   //     }
   //   ],
   // });
-  const arbEvents = await findArbitrageEvents();
-  printSplits(arbEvents);
+  await findArbitrageEvents();
 
   await close();
-
   process.exit(0);
 }
 
