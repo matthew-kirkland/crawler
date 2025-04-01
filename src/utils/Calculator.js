@@ -47,9 +47,6 @@ export class Calculator {
    * @param {number} odds2 odds for TEAM2
    * @returns {number} the expected profit as a decimal
    */
-  static expectedProfit_3bet(odds1, odds2, odds3) {
-    return (1 - (1 / odds1) - (1 / odds2) - (1 / odds3));
-  }
   static expectedProfit_2bet(odds1, odds2) {
     return (1 - (1 / odds1) - (1 / odds2));
   }
@@ -115,7 +112,7 @@ export class Calculator {
 
   /**
    * This function finds the least suspicious value in between the upper and lower bound.
-   * A "least suspicious value" is a value that is most round number that can fit between
+   * A "least suspicious value" is a value that is the most round number that can fit between
    * lowerBound and upperBound. Any bet that is a multiple of 10 is probably not cause for
    * suspicion from the bookmaker's perspective. A bet that is a multiple of 5 (but not 10)
    * might start to raise some eyebrows. A bet that is a multiple of 1 (but not 5 or 10) should
