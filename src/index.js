@@ -1,8 +1,9 @@
 // import { ladbrokesScraper } from './scrapers/ladbrokes.js';
 import { unibetEUScraper } from './scrapers/unibet_EU.js';
+import { TABtouchScraper } from './scrapers/TABtouch.js';
+import { unibetAUScraper } from './scrapers/unibet_AU.js';
 import { connect, close, clearDb, db, clearOldEvents } from './database.js';
 import { findArbitrageEvents, printSplits } from './utils/arbitrage.js';
-import { TABtouchScraper } from './scrapers/TABtouch.js';
 
 /**
  * The starting point for all scrapers
@@ -31,9 +32,11 @@ async function main() {
    */
   // re-run every hour - gather new games, remove expired games
   await unibetEUScraper();
-  console.log('Finished sraping Unibet EU');
+  console.log('Finished scraping Unibet EU');
   await TABtouchScraper();
   console.log('Finished sraping TABtouch');
+  await unibetAUScraper();
+  console.log('Finished scraping Unibet AU');
 
   // db.collection('Sports').insertOne({
   //   eventId: 'thisEventIsGood!!!!',
