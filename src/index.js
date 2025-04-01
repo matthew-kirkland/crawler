@@ -31,31 +31,31 @@ async function main() {
    * - tabtouch
    */
   // re-run every hour - gather new games, remove expired games
-  // await unibetEUScraper();
-  // console.log('Finished scraping Unibet EU');
-  // await TABtouchScraper();
-  // console.log('Finished sraping TABtouch');
-  // await unibetAUScraper();
-  // console.log('Finished scraping Unibet AU');
+  await unibetEUScraper();
+  console.log('Finished scraping Unibet EU');
+  await TABtouchScraper();
+  console.log('Finished sraping TABtouch');
+  await unibetAUScraper();
+  console.log('Finished scraping Unibet AU');
 
-  db.collection('Sports').insertOne({
-    eventId: 'thisEventIsGood!!!!',
-    startTime: new Date(),
-    sport: 'Soccer',
-    league: 'EPL',
-    team1Name: 'Matthew',
-    team2Name: 'Lingge',
-    betOffers: [
-      {
-        bookmaker: 'dummyBookmaker',
-        bookmakerId: '123',
-        link: 'https://www.wikipedia.org/',
-        team1Odds: 2,
-        team2Odds: 3,
-        drawOdds: 10,
-      }
-    ],
-  });
+  // db.collection('Sports').insertOne({
+  //   eventId: 'thisEventIsGood!!!!',
+  //   startTime: new Date(),
+  //   sport: 'Soccer',
+  //   league: 'EPL',
+  //   team1Name: 'Matthew',
+  //   team2Name: 'Lingge',
+  //   betOffers: [
+  //     {
+  //       bookmaker: 'dummyBookmaker',
+  //       bookmakerId: '123',
+  //       link: 'https://www.wikipedia.org/',
+  //       team1Odds: 2,
+  //       team2Odds: 3,
+  //       drawOdds: 10,
+  //     }
+  //   ],
+  // });
   await findArbitrageEvents();
 
   await close();

@@ -1,7 +1,7 @@
+import { Client, GatewayIntentBits, EmbedBuilder } from 'discord.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { Client, GatewayIntentBits, EmbedBuilder } from 'discord.js';
 
 const client = new Client({
   intents: [
@@ -13,6 +13,10 @@ const client = new Client({
 
 client.login(process.env.DISCORD_TOKEN);
 
+/**
+ * Sends an embedded message to the discord channel
+ * @param {string} message the main body of the message
+ */
 export async function sendNotif(message) {
   const channel = await client.channels.fetch('1356716460394676355');
   const embed = new EmbedBuilder()
