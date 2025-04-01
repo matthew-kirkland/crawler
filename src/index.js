@@ -2,6 +2,7 @@
 import { unibetEUScraper } from './scrapers/unibet_EU.js';
 import { connect, close, clearDb, db, clearOldEvents } from './database.js';
 import { findArbitrageEvents, printSplits } from './utils/arbitrage.js';
+import { TABtouchScraper } from './scrapers/TABtouch.js';
 
 /**
  * The starting point for all scrapers
@@ -30,7 +31,9 @@ async function main() {
    */
   // re-run every hour - gather new games, remove expired games
   await unibetEUScraper();
-  console.log('Finished sraping Unibet');
+  console.log('Finished sraping Unibet EU');
+  await TABtouchScraper();
+  console.log('Finished sraping TABtouch');
 
   // db.collection('Sports').insertOne({
   //   eventId: 'thisEventIsGood!!!!',
