@@ -1,7 +1,9 @@
 import { MongoClient } from 'mongodb';
 import Fuse from 'fuse.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
-const uri = 'mongodb+srv://matthewkirkland049:gCX1dcbjuEShs9WH@cluster0.ox2xm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri);
 let db;
 const clients = [];
