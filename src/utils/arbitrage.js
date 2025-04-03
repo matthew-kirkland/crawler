@@ -6,7 +6,6 @@ const defaultTotal = 100;
 
 /**
  * Searches the database for arbitrage events
- * @returns {array} set of events with arbitrage opportunities
  */
 export async function findArbitrageEvents() {
   const events = await db.collection('Sports').find({ }).toArray();
@@ -74,7 +73,7 @@ export function triggerBot(event) {
 }
 
 /**
- * Generates a message to be sent 
+ * Generates an arbitrage notification message to be sent 
  * @param {object} event the arbitrage event
  * @returns {string} the formatted message
  */
@@ -100,17 +99,17 @@ export function createMessage(event) {
 
   const teamSplitMsg = `Team 1: Place a bet on ${event.team1Name}
   Go to ${event.team1Bookmaker}, access at ${event.team1Link} for odds of ${event.team1Odds}
-  Should place ${moneySplit.money1} into this team
+  Should place $${moneySplit.money1} into this team
 
   Team 2: Place a bet on ${event.team2Name}
   Go to ${event.team2Bookmaker}, access at ${event.team2Link} for odds of ${event.team2Odds}
-  Should place ${moneySplit.money2} into this team`;
+  Should place $${moneySplit.money2} into this team`;
 
   let drawSplitMsg = '';
   if (event.drawOdds) {
     drawSplitMsg += `Draw: Place a bet on the draw
     Go to ${event.drawBookmaker}, access at ${event.drawLink} for odds of ${event.drawOdds}
-    Should place ${moneySplit.money3} into this team`;
+    Should place $${moneySplit.money3} into this team`;
   }
 
   const message = title + '\n' + profitMsg + '\n\n' + teamSplitMsg + '\n\n' + drawSplitMsg;
