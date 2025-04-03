@@ -1,7 +1,8 @@
-import { Client, GatewayIntentBits, EmbedBuilder } from 'discord.js';
+import { Client, GatewayIntentBits, EmbedBuilder, Guild } from 'discord.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
+const announcementRoleId = '1357113895851921573';
 
 const client = new Client({
   intents: [
@@ -14,11 +15,27 @@ const client = new Client({
 client.login(process.env.DISCORD_TOKEN);
 
 /**
+ * Adds or removes the event announcement role from the user
+ */
+client.on('interactionCreate', async (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
+
+  const role = interaction.guild.roles.cache.get(announcementRoleId);
+  if (interaction.commandName == 'subscribe') {
+    await interaction.member.roles.add(role);
+    interaction.reply('Subscribed to event announcements');
+  } else if (interaction.commandName == 'unsubscribe') {
+    await interaction.member.roles.remove(role);
+    interaction.reply('Unsubscribed from event announcements');
+  }
+});
+
+/**
  * Sends an embedded message to the discord channel
  * @param {string} message the main body of the message
  */
 export async function sendNotif(message) {
-  const channel = await client.channels.fetch('1356716460394676355');
+  const channel = await client.channels.fetch(process.env.CHANNEL_ID);
   const embed = new EmbedBuilder()
     .setTitle('🗣️💯‼️🔥 Arbitrage Event Found 😳😳😳')
     .setDescription(message)
