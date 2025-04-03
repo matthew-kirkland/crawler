@@ -1,2 +1,2 @@
 # Crawler
-> Crawls and scrapes websites
+> Scrapes websites to gather sports betting data
