@@ -28,7 +28,6 @@ async function main() {
    * - pointsbet
    * - neds
    * - TAB
-   * - tabtouch
    */
   // re-run every hour - gather new games, remove expired games
   await unibetEUScraper();
@@ -38,7 +37,7 @@ async function main() {
   await unibetAUScraper();
   console.log('Finished scraping Unibet AU');
 
-  // db.collection('Sports').insertOne({
+  // await db.collection('Sports').insertOne({
   //   eventId: 'thisEventIsGood!!!!',
   //   startTime: new Date(),
   //   sport: 'Soccer',
@@ -56,10 +55,12 @@ async function main() {
   //     }
   //   ],
   // });
-  await findArbitrageEvents();
-
-  await close();
-  process.exit(0);
+  setTimeout(async () => {
+    await findArbitrageEvents();
+  
+    await close();
+    process.exit(0);
+  }, 2000);
 }
 
 main();
