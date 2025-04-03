@@ -37,8 +37,13 @@ client.on('interactionCreate', async (interaction) => {
 export async function sendNotif(message) {
   const channel = await client.channels.fetch(process.env.CHANNEL_ID);
   const embed = new EmbedBuilder()
-    .setTitle('🗣️💯‼️🔥 Arbitrage Event Found 😳😳😳')
+    .setTitle('Arbitrage Event Found')
     .setDescription(message)
+    .setFooter(
+      {
+        text: 'To unsubscribe from these notifications, use the /unsubscribe command',
+      }
+    )
 
   channel.send({ embeds: [embed] });
 }
