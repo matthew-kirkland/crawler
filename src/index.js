@@ -30,12 +30,14 @@ async function main() {
    * - TAB
    */
   // re-run every hour - gather new games, remove expired games
+  console.log(`Time before starting: ${new Date()}`);
   await unibetEUScraper();
-  console.log('Finished scraping Unibet EU');
+  console.log(`Time after finishing unibetEU: ${new Date()}`);
   await TABtouchScraper();
-  console.log('Finished sraping TABtouch');
+  console.log(`Time after finishing TABtouch: ${new Date()}`);
   await unibetAUScraper();
-  console.log('Finished scraping Unibet AU');
+  console.log(`Time after finishing unibetAU: ${new Date()}`);
+  console.log(`Time after finishing all: ${new Date()}`);
 
   // await db.collection('Sports').insertOne({
   //   eventId: 'thisEventIsGood!!!!',
