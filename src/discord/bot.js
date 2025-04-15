@@ -1,12 +1,6 @@
-import express from 'express';
 import { Client, GatewayIntentBits, EmbedBuilder, Guild } from 'discord.js';
 import dotenv from 'dotenv';
 dotenv.config();
-
-const app = express();
-const port = process.env.PORT || 3000;
-app.get("/", (req, res) => res.send("Bot is running!"));
-app.listen(port, () => console.log(`Web server running on port ${port}`));
 
 const announcementRoleId = '1357113895851921573';
 
