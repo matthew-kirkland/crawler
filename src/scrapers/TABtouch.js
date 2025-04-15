@@ -52,7 +52,7 @@ export async function TABtouchScraper() {
       if (event.event.state == 'STARTED') continue;
 
       try {
-        url = `https://oc-offering-api.kambicdn.com/offering/v2018/rwwawa/betoffer/event/${event.event.id}.json?lang=en_AU&market=AU&client_id=2&channel_id=3&ncid=1743512859871&includeParticipants=true&range_size=1`
+        url = `https://oc-offering-api.kambicdn.com/offering/v2018/rwwawa/betoffer/event/${event.event.id}.json?lang=en_AU&market=AU&client_id=2&channel_id=3&ncid=1743512859871&includeParticipants=true`
         res = await axios.get(url);
         if (res.status != 200) continue;
         const offers = res.data.betOffers;
