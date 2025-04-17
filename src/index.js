@@ -59,7 +59,7 @@ async function main() {
   // });
   setTimeout(async () => {
     await findArbitrageEvents();
-  
+    console.log(`Time after scanning for arbitrage: ${new Date()}`);
     await close();
     process.exit(0);
   }, 2000);
