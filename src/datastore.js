@@ -48,6 +48,35 @@ export async function clearOldEvents() {
 }
 
 /**
+ * Writes the newly collected set of events and bet offers to the database
+ * @param {Array} events list of events
+ * @param {Array} bets list of bets corresponding to event
+ * @param {string} bookmakerString unique string representing each bookmaker
+ */
+export async function writeToData(events, bets, bookmakerString) {
+  let eventId;
+
+  for (const i in events) {
+    const existingEvent = await eventExists(events[i]);
+    if (existingEvent != null) {
+      const existingBetIndex = existingEvent.betOffers.findIndex(bet => bet.bookmaker === bookmakerString);
+      if (existingBetIndex != -1) {
+        existingEvent.betOffers[existingBetIndex] = bets[i]; // update existing bet offer if the bookmaker was there before
+      } else {
+        existingEvent.betOffers.push(bets[i]); // otherwise add the new bet
+      }
+      eventId = existingEvent.eventId;
+      await db.collection('Sports').updateOne({ eventId: eventId }, { $set: { betOffers: existingEvent.betOffers } });
+    } else {
+      events[i].betOffers[0] = bets[i];
+      eventId = events[i].startTime.toISOString().substring(0, 10) + '-' + events[i].league + '-' + events[i].team1Name + '-' + events[i].team2Name;
+      events[i].eventId = eventId;
+      await db.collection('Sports').insertOne(events[i]);
+    }
+  }
+}
+
+/**
  * Determines if an event already exists in the database
  * @param {object} thisEvent the event to inspect
  * @returns {} the existing event, if it is in the database, otherwise null

@@ -1,5 +1,5 @@
 import { Calculator } from './Calculator.js';
-import { db } from '../database.js';
+import { db } from '../datastore.js';
 import { sendNotif } from '../discord/bot.js';
 
 const defaultTotal = 100;

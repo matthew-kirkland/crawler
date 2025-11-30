@@ -1,8 +1,8 @@
 // import { ladbrokesScraper } from './scrapers/ladbrokes.js';
-import { unibetEUScraper } from './scrapers/unibet_EU.js';
+import { unibetEUScraper } from './scrapers/unibetEU.js';
 import { TABtouchScraper } from './scrapers/TABtouch.js';
-import { unibetAUScraper } from './scrapers/unibet_AU.js';
-import { connect, close, clearDb, db, clearOldEvents } from './database.js';
+import { unibetAUScraper } from './scrapers/unibetAU.js';
+import { connect, close, clearDb, db, clearOldEvents } from './datastore.js';
 import { findArbitrageEvents } from './utils/arbitrage.js';
 
 /**
@@ -44,11 +44,11 @@ async function main() {
   //   startTime: new Date(),
   //   sport: 'Soccer',
   //   league: 'EPL',
-  //   team1Name: 'Matthew',
-  //   team2Name: 'Lingge',
+  //   team1Name: 'team1',
+  //   team2Name: 'team2',
   //   betOffers: [
   //     {
-  //       bookmaker: 'dummyBookmaker',
+  //       bookmaker: 'bookmaker',
   //       bookmakerId: '123',
   //       link: 'https://www.wikipedia.org/',
   //       team1Odds: 2,
